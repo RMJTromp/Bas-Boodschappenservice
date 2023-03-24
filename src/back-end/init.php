@@ -3,6 +3,7 @@
     namespace {
 
         use Boodschappenservice\utilities\API;
+        use Boodschappenservice\utilities\File;
         use Boodschappenservice\utilities\Path;
         use Boodschappenservice\utilities\URL;
         use Dotenv\Dotenv;
@@ -42,7 +43,13 @@
         }
 
         #[NoReturn]
-        function printAndExit(string $content, string $type = "text/html; charset=UTF-8") : void {
+        function printAndExit(File|string $content, string $type = "text/html; charset=UTF-8") : void {
+            if($content instanceof File) {
+                $type = $content->getMimeType();
+                header("Content-Disposition: inline; filename=\"{$content->getBaseName()}\"");
+                $content = $content->getContents();
+            }
+
             header("Content-Type: $type");
             $length = strlen($content);
 //            if(str_contains(getHeader("Accept-Encoding"), "gzip")) {
