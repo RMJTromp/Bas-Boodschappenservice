@@ -1,0 +1,14 @@
+{
+    "name": "bas-boodschappenservice/back-end",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Boodschappenservice\\": "src"
+        }
+    },
+    "require": {
+        "vlucas/phpdotenv": "^5.4",
+        "ralouphie/mimey": "^1.0",
+        "firebase/php-jwt": "^6.4"
+    }
+}
