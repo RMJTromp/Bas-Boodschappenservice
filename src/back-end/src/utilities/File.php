@@ -2,10 +2,11 @@
 
     namespace Boodschappenservice\utilities;
 
+    use JetBrains\PhpStorm\Internal\TentativeType;
     use Mimey\MimeTypes;
     use RuntimeException;
 
-    class File {
+    class File implements \JsonSerializable {
 
         const separator = DIRECTORY_SEPARATOR;
 
@@ -330,22 +331,22 @@
         /**
          * Gets last access time of file
          * @link https://php.net/manual/en/function.fileatime.php
-         * @return int|false the time the file was last accessed, or false on failure.
+         * @return int the time the file was last accessed, or -1 on failure.
          * The time is returned as a Unix timestamp.
          */
-        public function getLastAccessed() : false|int {
-            return fileatime($this->path);
+        public function getLastAccessed() : int {
+            return $this->exists() ? fileatime($this->path) : -1;
         }
 
         /**
          * Gets file modification time
          * @link https://php.net/manual/en/function.filemtime.php
-         * @return int|false the time the file was last modified, or false on failure.
+         * @return int the time the file was last modified, or -1 on failure.
          * The time is returned as a Unix timestamp, which is
          * suitable for the date function.
          */
-        public function getLastModified() : false|int {
-            return filemtime($this->path);
+        public function getLastModified() : int {
+            return $this->exists() ? filemtime($this->path) : -1;
         }
 
         /**
@@ -360,11 +361,10 @@
         /**
          * Gets file size
          * @link https://php.net/manual/en/function.filesize.php
-         * @return int|false the size of the file in bytes, or false (and generates an error
-         * of level E_WARNING) in case of an error.
+         * @return int the size of the file in bytes, or -1
          */
-        public function getFileSize() : false|int {
-            return filesize($this->path);
+        public function getFileSize() : int {
+            return $this->exists() ? filesize($this->path) : -1;
         }
 
         /**
@@ -604,4 +604,21 @@
             return true;
         }
 
+        public function jsonSerialize(): array {
+            return [
+                "path" => $this->getPath(),
+                "name" => $this->getBaseName(),
+                "extension" => $this->getExtension(),
+                "isFile" => $this->isFile(),
+                "isDirectory" => $this->isDirectory(),
+                "exists" => $this->exists(),
+                "canRead" => $this->canRead(),
+                "canWrite" => $this->canWrite(),
+                "canExecute" => $this->canExecute(),
+                "size" => $this->getFileSize(),
+                "lastModified" => $this->getLastModified(),
+                "lastAccessed" => $this->getLastAccessed(),
+                "permissions" => $this->getFilePerms()
+            ];
+        }
     }
