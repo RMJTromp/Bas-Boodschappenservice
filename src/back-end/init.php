@@ -43,13 +43,14 @@
         }
 
         #[NoReturn]
-        function printAndExit(File|string $content, string $type = "text/html; charset=UTF-8") : void {
+        function printAndExit(File|string $content, string $type = null) : void {
             if($content instanceof File) {
-                $type = $content->getMimeType();
+                $type = empty($type) ? $content->getMimeType() : $type;
                 header("Content-Disposition: inline; filename=\"{$content->getBaseName()}\"");
                 $content = $content->getContents();
             }
 
+            $type = empty($type) ? "text/html; charset=UTF-8" : $type;
             header("Content-Type: $type");
             $length = strlen($content);
 //            if(str_contains(getHeader("Accept-Encoding"), "gzip")) {
