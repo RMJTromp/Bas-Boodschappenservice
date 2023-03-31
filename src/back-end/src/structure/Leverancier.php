@@ -92,6 +92,22 @@
             if(!$stmt->execute()) throw new \Exception($stmt->error, 500);
         }
 
+        public function __set(string $name, $value): void {
+            if($name === "id") throw new \Exception("id is read-only", 500);
+
+            $value = trim($value);
+            $length = strlen($value);
+            if($name === "naam") {
+                if($length < 2) throw new \Exception("Naam moet minimaal 2 karakters zijn", 400);
+                else if($length > 15) throw new \Exception("Naam mag niet langer dan 15 karakters zijn", 400);
+            } else if($name === "contact") {
+                if($length < 2) throw new \Exception("Contactpersoon moet minimaal 2 karakters zijn", 400);
+                else if($length > 15) throw new \Exception("Contactpersoon mag niet langer dan 15 karakters zijn", 400);
+            }
+
+            $this[$name] = $value;
+        }
+
         public function jsonSerialize(): array {
             return [
                 "id" => $this->id,

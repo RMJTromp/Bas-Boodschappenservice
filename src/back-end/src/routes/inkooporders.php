@@ -36,13 +36,9 @@ Route::handle(RegExp::compile("/^\/inkooporder\/(\d+)$/"), function(Request $req
 });
 
 Route::post("/inkooporder", function(Request $request) {
-    try {
-        API::printAndExit(Inkooporder::create(
-            intval($request->body['artId']),
-            intval($request->body['levId']),
-            intval($request->body['inkoopAantal']),
-            $request->body['inkoopDatum']));
-    } catch (\Exception $e) {
-        API::printAndExit($e->getMessage(), $e->getCode());
-    }
+    API::printAndExit(Inkooporder::create(
+        intval($request->body['artId']),
+        intval($request->body['levId']),
+        intval($request->body['inkoopAantal']),
+        $request->body['inkoopDatum']));
 });
