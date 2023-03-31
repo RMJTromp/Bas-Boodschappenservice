@@ -29,21 +29,6 @@
         if($conn->connect_error)
             throw new Exception("Connection failed: " . $conn->connect_error, 500);
 
-//      this is needed for setup_db
-        try {
-            $test = $_ENV["INSERT_TEST_DATA"] ?? "true";
-
-            require_once '../tables.php';
-
-            create_tables($conn);
-
-            if ($test === "TRUE") insert_test_data($conn);
-
-            print('Tables successfully created');
-        } catch (Exception $e) {
-            print($e->getMessage());
-        }
-
 
         /**
          * Get request header value or null if none is present
