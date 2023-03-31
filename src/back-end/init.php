@@ -29,20 +29,6 @@
         if($conn->connect_error)
             throw new Exception("Connection failed: " . $conn->connect_error, 500);
 
-
-        /**
-         * Get request header value or null if none is present
-         * @param string $key The header key
-         * @return string|null The header value or null
-         */
-        function getHeader(string $key) : ?string {
-            $headers = apache_request_headers();
-            foreach($headers as $header => $value) {
-                if(strtolower($header) == strtolower($key)) return $value;
-            }
-            return null;
-        }
-
         #[NoReturn]
         function printAndExit(File|string $content, string $type = null) : void {
             if($content instanceof File) {
@@ -54,11 +40,11 @@
             $type = empty($type) ? "text/html; charset=UTF-8" : $type;
             header("Content-Type: $type");
             $length = strlen($content);
-//            if(str_contains(getHeader("Accept-Encoding"), "gzip")) {
-//                header("Content-Encoding: gzip");
-//                $content = gzencode($content);
-//                $length = strlen($content);
-//            }
+            if(str_contains($_SERVER['HTTP_ACCEPT_ENCODING'] ?? "", 'gzip')) {
+                header("Content-Encoding: gzip");
+                $content = gzencode($content);
+                $length = strlen($content);
+            }
             header("Content-Length: $length");
             exit($content);
         }
