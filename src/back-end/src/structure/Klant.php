@@ -62,7 +62,7 @@ class Klant implements \JsonSerializable
     private function __construct(int $id)
     {
         global $conn;
-        $stmt = $conn->prepare("SELECT * FROM `klanten` WHERE id = ?");
+        $stmt = $conn->prepare("SELECT * FROM `klanten` WHERE klantId = ?");
         $stmt->bind_param("i", $id);
         $res = $stmt->execute();
         if ($res) {
@@ -82,7 +82,7 @@ class Klant implements \JsonSerializable
     public function save()
     {
         global $conn;
-        $stmt = $conn->prepare("UPDATE `klanten` SET naam = ?, adres = ?, postcode = ?, woonplaats = ?, telefoon = ? WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE `klanten` SET klantNaam = ?, klantAdres = ?, klantPostcode = ?, klantPlaats = ?, klantTelefoon = ? WHERE klantId = ?");
         $stmt->bind_param("ssssssi", $this->naam, $this->adres, $this->postcode, $this->woonplaats, $this->telefoon, $this->id);
         if (!$stmt->execute()) throw new \Exception($stmt->error, 500);
     }
