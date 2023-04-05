@@ -48,4 +48,11 @@
             header("Content-Length: $length");
             exit($content);
         }
+
+        #[NoReturn]
+        function dumpAndExit(...$var) : void {
+            printAndExit((new ArrayList($var))
+                ->map(fn($var) => var_export($var, true))
+                ->join("\n\n"), "text/plain");
+        }
     }
