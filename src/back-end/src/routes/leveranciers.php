@@ -4,11 +4,17 @@
     use Boodschappenservice\core\Route;
     use Boodschappenservice\objects\Leverancier;
     use Boodschappenservice\utilities\API;
+    use Boodschappenservice\utilities\Math;
     use Boodschappenservice\utilities\RegExp;
     use Boodschappenservice\utilities\ResponseCode;
 
     Route::get("/leveranciers", function(Request $request) {
-        API::printAndExit(Leverancier::getAll());
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 100;
+        $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
+        $limit = Math::min(Math::max($limit, 1), 100);
+        $offset = Math::max($offset, 0);
+
+        API::printAndExit(Leverancier::getAll($limit, $offset));
     });
 
     Route::handle(RegExp::compile("/^\/leverancier\/(\d+)$/"), function(Request $request, array $matches) {
