@@ -4,7 +4,7 @@
 
     use Boodschappenservice\exceptions\MalformedPatternException;
 
-    class RegExp {
+    class RegExp implements \JsonSerializable {
 
         private string $pattern;
 
@@ -43,6 +43,10 @@
         }
 
         public function __toString(): string {
+            return $this->pattern;
+        }
+
+        public function jsonSerialize(): string {
             return $this->pattern;
         }
 
