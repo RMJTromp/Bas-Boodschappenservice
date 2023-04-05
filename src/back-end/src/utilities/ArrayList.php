@@ -108,6 +108,12 @@
             return array_search($object, $this->array);
         }
 
+        public function anyMatch(callable $callback) : mixed {
+            foreach ($this->array as $item)
+                if($callback($item)) return $item;
+            return false;
+        }
+
         public function contains(mixed $object) : bool {
             return $this->find($object) !== false;
         }
@@ -141,4 +147,13 @@
         public function __unserialize($data): void {
             $this->array = unserialize($data);
         }
+
+        public function join(string $string) : string {
+            return implode($string, $this->array);
+        }
+
+        public function random() : mixed {
+            return $this->array[array_rand($this->array)];
+        }
+
     }
