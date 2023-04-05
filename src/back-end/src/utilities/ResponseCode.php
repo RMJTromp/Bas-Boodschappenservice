@@ -49,6 +49,7 @@
         public const UNSUPPORTED_MEDIA_TYPE = [415, "Unsupported Media Type"];
         public const REQUEST_RANGE_NOT_SATISFIED = [416, "Request Range Not Satisfied"];
         public const EXPECTATION_FAILED = [417, "Expectation Failed"];
+        public const CLIENT_CLOSED_REQUEST = [499, "Client Closed Request"];
 
         // server error
         public const INTERNAL_SERVER_ERROR = [500, "Internal Server Error"];
