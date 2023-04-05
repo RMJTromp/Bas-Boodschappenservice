@@ -37,15 +37,31 @@
     });
 
     Route::post("/leverancier", function(Request $request) {
-        try {
-//            API::printAndExit(Leverancier::create(
-//                $request->body['naam'],
-//                $request->body['contact'],
-//                $request->body['email'],
-//                $request->body['adres'],
-//                $request->body['postcode'],
-//                $request->body['woonplaats']));
-        } catch(\Exception $e) {
-            API::printAndExit($e->getMessage(), $e->getCode());
+        $_GET = $request->url->searchParams;
+        $_POST = $request->body;
+
+
+        $amount = $request->url->searchParams["amount"] ?? 1;
+        if($amount < 1) API::printAndExit([], ResponseCode::BAD_REQUEST[0], "Amount must be at least 1");
+        else if($amount > 100) API::printAndExit([], ResponseCode::BAD_REQUEST[0], "Amount must be at most 100");
+
+        if($amount === 1) {
+            $leverancier = !isset($_GET['random']) ? Leverancier::generateRandom() : Leverancier::create();
+
+            if(!empty($_POST['naam'])) $leverancier->naam = $_POST['naam'];
+            if(!empty($_POST['contact'])) $leverancier->contact = $_POST['contact'];
+            if(!empty($_POST['email'])) $leverancier->email = $_POST['email'];
+            if(!empty($_POST['adres'])) $leverancier->adres = $_POST['adres'];
+            if(!empty($_POST['postcode'])) $leverancier->postcode = $_POST['postcode'];
+            if(!empty($_POST['woonplaats'])) $leverancier->woonplaats = $_POST['woonplaats'];
+            $leverancier->save();
+
+            API::printAndExit($leverancier);
+        } else {
+            $leveranciers = [];
+            for($i = 0; $i < $amount; $i++) {
+                $leveranciers[] = Leverancier::generateRandom();
+            }
+            API::printAndExit($leveranciers);
         }
     });
