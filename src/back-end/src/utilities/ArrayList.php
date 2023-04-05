@@ -136,7 +136,7 @@
             return new ArrayList(array_unique($this->array));
         }
 
-        public function jsonSerialize() {
+        public function jsonSerialize() : mixed {
             return $this->array;
         }
 
