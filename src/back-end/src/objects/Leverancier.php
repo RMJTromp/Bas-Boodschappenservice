@@ -4,6 +4,7 @@
 
     use Boodschappenservice\attributes\Column;
     use Boodschappenservice\attributes\Table;
+    use Boodschappenservice\utilities\MockData;
 
     /**
      * @property-read int $id Leverancier ID
@@ -64,5 +65,24 @@
             maxLength: 25
         )]
         private string $woonplaats;
+
+        public static function generateRandom() : Leverancier {
+
+            $mockData = MockData::getInstance();
+
+            $company = $mockData->companies->random();
+            $contact = $mockData->names->random() . " " . $mockData->surnames->random();
+            $email = strtolower(MockData::strip($contact) . "@" . MockData::strip($company) . ".nl");
+
+            $leverancier = Leverancier::create();
+            $leverancier->naam = $company;
+            $leverancier->contact = $contact;
+            $leverancier->email = $email;
+            $leverancier->adres = $mockData->street->random() . " " . rand(1, 350);
+            $leverancier->postcode = rand(1000, 9999) . chr(rand(65, 90)) . chr(rand(65, 90));
+            $leverancier->woonplaats = $mockData->plaats->random();
+            $leverancier->save();
+            return $leverancier;
+        }
 
     }
