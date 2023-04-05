@@ -3,6 +3,7 @@
     namespace {
 
         use Boodschappenservice\utilities\API;
+        use Boodschappenservice\utilities\ArrayList;
         use Boodschappenservice\utilities\File;
         use Boodschappenservice\utilities\Path;
         use Boodschappenservice\utilities\URL;
@@ -28,6 +29,8 @@
         );
         if($conn->connect_error)
             throw new Exception("Connection failed: " . $conn->connect_error, 500);
+
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
         #[NoReturn]
         function printAndExit(File|string $content, string $type = null) : void {
