@@ -2,15 +2,19 @@
 
     namespace Boodschappenservice\core;
 
-    use Boodschappenservice\utilities\API;
     use ReflectionFunction;
+    use Boodschappenservice\utilities\API;
     use Boodschappenservice\utilities\RegExp;
+
+    register_shutdown_function(function() {
+        if(!Route::$handled) API::printAndExit([], 404);
+    });
 
     class Route {
 
         private function __construct() {}
 
-        public static bool $handled = true;
+        public static bool $handled = false;
 
         /**
          * @param string|RegExp $path
@@ -21,7 +25,7 @@
             $request = Request::get();
             $pathname = urldecode($request->url->pathname);
             if((is_string($path) && strtolower($path) === strtolower($pathname)) || ($path instanceof RegExp && $path->test($pathname))) {
-                self::$handled = true;
+                Route::$handled = true;
                 if((is_string($method) && $method === $request->method) || (is_array($method) && in_array($request->method, $method, true))) {
                     $refFunc = new ReflectionFunction($callback);
                     try {

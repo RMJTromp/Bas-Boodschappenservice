@@ -26,5 +26,3 @@
         if($conn->multi_query($file->getContents())) API::printAndExit("Tables initialized & populated");
         else throw new Exception("Failed to initialize tables: {$conn->error}", 500);
     });
-
-    API::printAndExit([], 404);
