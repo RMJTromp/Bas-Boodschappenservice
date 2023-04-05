@@ -13,12 +13,18 @@
     }
 
     Route::get("/setup", function(Request $request) {
-        global $conn; // $conn is al gedefinieerd
-        require_once '../tables.php';
-        create_tables($conn);
-        insert_test_data($conn);
-        API::printAndExit("Tables initialized", 200);
+        if(($_GET['confirm'] ?? "false") !== "true") {
+            printAndExit(<<<EOF
+                <script>
+                    window.location.href = new URL('?confirm=' + String(confirm("Are you sure you want to initiate setup?")), window.location.href).href;
+                </script>                
+            EOF);
+        }
+
+        global $conn;
+        $file = new File("tables.sql");
+        if($conn->multi_query($file->getContents())) API::printAndExit("Tables initialized & populated");
+        else throw new Exception("Failed to initialize tables: {$conn->error}", 500);
     });
 
-
-//    API::printAndExit([], 404);
+    API::printAndExit([], 404);

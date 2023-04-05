@@ -1,0 +1,95 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+
+CREATE TABLE IF NOT EXISTS `LEVERANCIERS` (
+    `levId` INT NOT NULL AUTO_INCREMENT,
+    `levNaam` VARCHAR(15) NOT NULL,
+    `levContact` VARCHAR(20) NOT NULL,
+    `levEmail` VARCHAR(30) NOT NULL,
+    `levAdres` VARCHAR(30) NOT NULL,
+    `levPostcode` VARCHAR(6) NOT NULL,
+    `levWoonplaats` VARCHAR(25) NOT NULL,
+    PRIMARY KEY (`levId`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `ARTIKELEN` (
+    `artId` INT NOT NULL AUTO_INCREMENT,
+    `artOmschrijving` VARCHAR(12) NOT NULL,
+    `artInkoop` DOUBLE NULL,
+    `artVerkoop` DOUBLE NULL,
+    `artMinVoorraad` INT NOT NULL,
+    `artMaxVoorraad` INT NOT NULL,
+    `artLocatie` INT NULL,
+    `levId` INT NOT NULL,
+    PRIMARY KEY (`artId`),
+    INDEX `levId_idx` (`levId` ASC) VISIBLE,
+    CONSTRAINT `leveranciers id`
+      FOREIGN KEY (`levId`)
+          REFERENCES `LEVERANCIERS` (`levId`)
+          ON DELETE CASCADE
+          ON UPDATE NO ACTION
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `INKOOPORDERS` (
+    `inkOrdId` INT NOT NULL AUTO_INCREMENT,
+    `levId` INT NOT NULL,
+    `inkOrdDatum` DATE NOT NULL,
+    `artId` INT NOT NULL,
+    `inkOrdBestAantal` INT NOT NULL,
+    `inkOrdStatus` TINYINT NOT NULL DEFAULT 0,
+    PRIMARY KEY (`inkOrdId`),
+    UNIQUE INDEX `artId_UNIQUE` (`artId` ASC) VISIBLE,
+    UNIQUE INDEX `levId_UNIQUE` (`levId` ASC) VISIBLE,
+    UNIQUE INDEX `inkOrdId_UNIQUE` (`inkOrdId` ASC) VISIBLE,
+    CONSTRAINT `leverancier id`
+     FOREIGN KEY (`levId`)
+         REFERENCES `LEVERANCIERS` (`levId`)
+         ON DELETE CASCADE
+         ON UPDATE NO ACTION,
+    CONSTRAINT `artikel id`
+     FOREIGN KEY (`artId`)
+         REFERENCES `ARTIKELEN` (`artId`)
+         ON DELETE CASCADE
+         ON UPDATE NO ACTION
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `KLANTEN` (
+    `klantId` INT NOT NULL AUTO_INCREMENT,
+    `klantNaam` VARCHAR(20) NOT NULL,
+    `klantEmail` VARCHAR(30) NOT NULL,
+    `klantAdres` VARCHAR(30) NOT NULL,
+    `klantPostcode` VARCHAR(6) NOT NULL,
+    `klantWoonplaats` VARCHAR(25) NOT NULL,
+    PRIMARY KEY (`klantId`),
+    UNIQUE INDEX `idKLANTEN_UNIQUE` (`klantId` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `VERKOOPORDERS` (
+    `verkOrdId` INT NOT NULL AUTO_INCREMENT,
+    `klantId` INT NOT NULL,
+    `artId` INT NOT NULL,
+    `verkOrdDatum` DATE NOT NULL,
+    `verkOrdBestAantal` INT NOT NULL,
+    `verkOrdStatus` TINYINT NOT NULL DEFAULT 1,
+    PRIMARY KEY (`verkOrdId`),
+    UNIQUE INDEX `klantId_UNIQUE` (`klantId` ASC) VISIBLE,
+    UNIQUE INDEX `VERKOOPORDERScol_UNIQUE` (`artId` ASC) VISIBLE,
+    UNIQUE INDEX `verkOrdId_UNIQUE` (`verkOrdId` ASC) VISIBLE,
+    CONSTRAINT `artikels id`
+      FOREIGN KEY (`artId`)
+          REFERENCES `ARTIKELEN` (`artId`)
+          ON DELETE CASCADE
+          ON UPDATE NO ACTION,
+    CONSTRAINT `klant id`
+      FOREIGN KEY (`klantId`)
+          REFERENCES `KLANTEN` (`klantId`)
+          ON DELETE CASCADE
+          ON UPDATE NO ACTION
+) ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
