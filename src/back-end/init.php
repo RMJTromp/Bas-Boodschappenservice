@@ -20,6 +20,8 @@
 
         $errors = [];
 
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
         $conn = new mysqli(
             hostname: $_ENV["DB_HOST"] ?? "localhost",
             username: $_ENV["DB_USER"] ?? "root",
@@ -32,8 +34,6 @@
         $dbName = $_ENV["DB_NAME"] ?? "boodschappenservice";
         $conn->query("CREATE DATABASE IF NOT EXISTS `{$dbName}` CHARACTER SET utf8 COLLATE utf8_general_ci;");
         $conn->select_db($dbName);
-
-        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
         #[NoReturn]
         function printAndExit(File|string $content, string $type = null) : void {
