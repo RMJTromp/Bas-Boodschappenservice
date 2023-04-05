@@ -2,7 +2,7 @@
 
 use Boodschappenservice\core\Request;
 use Boodschappenservice\core\Route;
-use Boodschappenservice\structure\Klant;
+use Boodschappenservice\objects\Klant;
 use Boodschappenservice\utilities\API;
 use Boodschappenservice\utilities\RegExp;
 use Boodschappenservice\utilities\ResponseCode;
@@ -18,7 +18,7 @@ Route::handle(RegExp::compile("/^\/Klant\/(\d+)$/"), function(Request $request, 
 
     switch($request->method) {
         case "GET":
-            API::printAndExit($klant);
+            API::printAndExit($Klant);
         case "DELETE":
             $Klant->delete();
             API::printAndExit([], ResponseCode::OK[0]);

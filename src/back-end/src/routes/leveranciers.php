@@ -2,14 +2,13 @@
 
     use Boodschappenservice\core\Request;
     use Boodschappenservice\core\Route;
-    use Boodschappenservice\structure\Leverancier;
+    use Boodschappenservice\objects\Leverancier;
     use Boodschappenservice\utilities\API;
     use Boodschappenservice\utilities\RegExp;
     use Boodschappenservice\utilities\ResponseCode;
 
     Route::get("/leveranciers", function(Request $request) {
-        $leveranciers = Leverancier::getAll();
-        API::printAndExit($leveranciers);
+        API::printAndExit(Leverancier::getAll());
     });
 
     Route::handle(RegExp::compile("/^\/leverancier\/(\d+)$/"), function(Request $request, array $matches) {
@@ -39,13 +38,13 @@
 
     Route::post("/leverancier", function(Request $request) {
         try {
-            API::printAndExit(Leverancier::create(
-                $request->body['naam'],
-                $request->body['contact'],
-                $request->body['email'],
-                $request->body['adres'],
-                $request->body['postcode'],
-                $request->body['woonplaats']));
+//            API::printAndExit(Leverancier::create(
+//                $request->body['naam'],
+//                $request->body['contact'],
+//                $request->body['email'],
+//                $request->body['adres'],
+//                $request->body['postcode'],
+//                $request->body['woonplaats']));
         } catch(\Exception $e) {
             API::printAndExit($e->getMessage(), $e->getCode());
         }

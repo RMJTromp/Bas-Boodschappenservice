@@ -2,7 +2,7 @@
 
 use Boodschappenservice\core\Request;
 use Boodschappenservice\core\Route;
-use Boodschappenservice\structure\User;
+use Boodschappenservice\objects\User;
 use Boodschappenservice\utilities\API;
 use Boodschappenservice\utilities\ResponseCode;
 use Boodschappenservice\utilities\RegExp;

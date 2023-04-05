@@ -2,7 +2,7 @@
 
 use Boodschappenservice\core\Request;
 use Boodschappenservice\core\Route;
-use Boodschappenservice\structure\Verkooporder;
+use Boodschappenservice\objects\Verkooporder;
 use Boodschappenservice\utilities\API;
 use Boodschappenservice\utilities\RegExp;
 use Boodschappenservice\utilities\ResponseCode;
