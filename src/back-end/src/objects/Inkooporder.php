@@ -1,6 +1,6 @@
 <?php
 
-namespace Boodschappenservice\structure;
+namespace Boodschappenservice\objects;
 
 use Boodschappenservice\utilities\ArrayList;
 
