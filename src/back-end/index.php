@@ -1,6 +1,5 @@
 <?php
 
-    use Boodschappenservice\core\Request;
     use Boodschappenservice\core\Route;
     use Boodschappenservice\utilities\API;
     use Boodschappenservice\utilities\File;
@@ -12,7 +11,7 @@
         include $route;
     }
 
-    Route::get("/setup", function(Request $request) {
+    Route::get("/setup", function() {
         if(($_GET['confirm'] ?? "false") !== "true") {
             printAndExit(<<<EOF
                 <script>
