@@ -36,6 +36,8 @@
             $dbName = $_ENV["DB_NAME"] ?? "boodschappenservice";
             $conn->query("CREATE DATABASE IF NOT EXISTS `{$dbName}` CHARACTER SET utf8 COLLATE utf8_general_ci;");
             $conn->select_db($dbName);
+
+            !$conn->multi_query((new File("tables.sql"))->getContents()) and throw new Exception("Failed to initialize tables: {$conn->error}", 500);
         }
 
         #[NoReturn]
