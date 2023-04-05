@@ -11,6 +11,8 @@
         include $route;
     }
 
+    Route::get("/", fn() => API::printAndExit([]));
+
     Route::get("/setup", function() {
         switch ($_GET['confirm'] ?? "") {
             case "true":
