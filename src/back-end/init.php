@@ -32,9 +32,11 @@
         if($conn->connect_error)
             throw new Exception("Connection failed: " . $conn->connect_error, 500);
 
-        $dbName = $_ENV["DB_NAME"] ?? "boodschappenservice";
-        $conn->query("CREATE DATABASE IF NOT EXISTS `{$dbName}` CHARACTER SET utf8 COLLATE utf8_general_ci;");
-        $conn->select_db($dbName);
+        {
+            $dbName = $_ENV["DB_NAME"] ?? "boodschappenservice";
+            $conn->query("CREATE DATABASE IF NOT EXISTS `{$dbName}` CHARACTER SET utf8 COLLATE utf8_general_ci;");
+            $conn->select_db($dbName);
+        }
 
         #[NoReturn]
         function printAndExit(File|string $content, string $type = null) : void {
