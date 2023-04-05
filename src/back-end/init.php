@@ -44,6 +44,10 @@
             }
         }
 
+        function println(string $string) : void {
+            echo $string . PHP_EOL;
+        }
+
         #[NoReturn]
         function printAndExit(File|string $content, string $type = null) : void {
             if($content instanceof File) {
