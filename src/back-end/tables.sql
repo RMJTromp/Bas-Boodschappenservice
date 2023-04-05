@@ -7,8 +7,8 @@ CREATE TABLE IF NOT EXISTS `LEVERANCIERS` (
     `levId` INT NOT NULL AUTO_INCREMENT,
     `levNaam` VARCHAR(15) NOT NULL,
     `levContact` VARCHAR(20) NOT NULL,
-    `levEmail` VARCHAR(30) NOT NULL,
-    `levAdres` VARCHAR(30) NOT NULL,
+    `levEmail` VARCHAR(320) NOT NULL,
+    `levAdres` VARCHAR(255) NOT NULL,
     `levPostcode` VARCHAR(6) NOT NULL,
     `levWoonplaats` VARCHAR(25) NOT NULL,
     PRIMARY KEY (`levId`)
@@ -58,8 +58,8 @@ CREATE TABLE IF NOT EXISTS `INKOOPORDERS` (
 CREATE TABLE IF NOT EXISTS `KLANTEN` (
     `klantId` INT NOT NULL AUTO_INCREMENT,
     `klantNaam` VARCHAR(20) NOT NULL,
-    `klantEmail` VARCHAR(30) NOT NULL,
-    `klantAdres` VARCHAR(30) NOT NULL,
+    `klantEmail` VARCHAR(320) NOT NULL,
+    `klantAdres` VARCHAR(255) NOT NULL,
     `klantPostcode` VARCHAR(6) NOT NULL,
     `klantWoonplaats` VARCHAR(25) NOT NULL,
     PRIMARY KEY (`klantId`),

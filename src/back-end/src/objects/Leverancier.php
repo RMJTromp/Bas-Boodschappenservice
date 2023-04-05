@@ -41,7 +41,7 @@
         #[Column("levEmail",
             regexp: '/^[\\w\\-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$/u',
             minLength: 3,
-            maxLength: 30
+            maxLength: 320
         )]
         private string $email;
 
