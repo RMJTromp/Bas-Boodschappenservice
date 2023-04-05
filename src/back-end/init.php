@@ -21,14 +21,17 @@
         $errors = [];
 
         $conn = new mysqli(
-            $_ENV["DB_HOST"] ?? "localhost",
-            $_ENV["DB_USER"] ?? "root",
-            $_ENV["DB_PASS"] ?? "",
-            $_ENV["DB_NAME"] ?? "boodschappenservice",
-            $_ENV["DB_PORT"] ?? 3306
+            hostname: $_ENV["DB_HOST"] ?? "localhost",
+            username: $_ENV["DB_USER"] ?? "root",
+            password: $_ENV["DB_PASS"] ?? "",
+            port: $_ENV["DB_PORT"] ?? 3306
         );
         if($conn->connect_error)
             throw new Exception("Connection failed: " . $conn->connect_error, 500);
+
+        $dbName = $_ENV["DB_NAME"] ?? "boodschappenservice";
+        $conn->query("CREATE DATABASE IF NOT EXISTS `{$dbName}` CHARACTER SET utf8 COLLATE utf8_general_ci;");
+        $conn->select_db($dbName);
 
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
