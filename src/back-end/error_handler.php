@@ -28,7 +28,7 @@
         if (!empty($errors)) {
             ob_clean();
             $lastError = $errors[count($errors) - 1];
-            API::printAndExit([], $lastError["code"] == 0 ? 500 : $lastError["code"], null, strtolower($_ENV["DEBUG"]) === "true" ? ["stacktrace" => $errors] : []);
+            API::printAndExit([], $lastError["code"] == 0 || $lastError['type'] === "mysqli_sql_exception" ? 500 : $lastError["code"], null, strtolower($_ENV["DEBUG"]) === "true" ? ["stacktrace" => $errors] : []);
         }
 
         ob_end_flush();
