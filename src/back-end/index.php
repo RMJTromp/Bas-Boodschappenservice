@@ -5,7 +5,7 @@
     use Boodschappenservice\utilities\File;
 
     require "init.php";
-    require "src/tests/register_test.php";
+    require "src/tests/user_tests.php";
 
 
 // load all routes
@@ -34,6 +34,6 @@
     });
 
     Route::get("/register-test", function() {
-        $result = testRegisterUser();
+        $result = testUserRegistrationAndLogin();
         API::printAndExit($result);
     });

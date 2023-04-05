@@ -104,4 +104,27 @@ class User implements \JsonSerializable {
             }
         }
     }
+
+    public static function login(string $username, string $password): User
+    {
+        global $conn;
+        $stmt = $conn->prepare("SELECT userId, password FROM `users` WHERE username = ? LIMIT 1");
+        $stmt->bind_param("s", $username);
+        $res = $stmt->execute();
+
+        if ($res) {
+            $stmt->bind_result($userId, $hashedPassword);
+            if ($stmt->fetch()) {
+                if (password_verify($password, $hashedPassword)) {
+                    return User::get($userId);
+                } else {
+                    throw new \Exception("Invalid password.", 401);
+                }
+            } else {
+                throw new \Exception("User not found.", 404);
+            }
+        } else {
+            throw new \Exception($stmt->error, 500);
+        }
+    }
 }
