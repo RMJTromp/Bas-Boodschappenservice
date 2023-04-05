@@ -3,18 +3,20 @@
     namespace Boodschappenservice\objects;
 
     use Boodschappenservice\attributes\Column;
-    use Boodschappenservice\attributes\Matches;
     use Boodschappenservice\attributes\Sensitive;
     use Boodschappenservice\attributes\Table;
     use Boodschappenservice\utilities\ArrayList;
     use Exception;
-    use JetBrains\PhpStorm\Immutable;
     use ReflectionClass;
+    use ReflectionException;
     use ReflectionProperty;
 
     abstract class BaseObject implements \JsonSerializable {
 
-        /** @return static[] */
+        /**
+         * @return static[]
+         * @throws Exception
+         */
         public static function getAll() : array {
             $table = self::getTable();
             /**
@@ -29,12 +31,16 @@
                 $res = $stmt->get_result();
                 $objects = [];
                 while($row = $res->fetch_assoc()) {
-                    $objects[] = self::get($row[$column->name]);
+                    $objects[] = $row[$column->name];
                 }
-                return $objects;
+
+                return (new ArrayList($objects))->map(fn(int $id) => self::get($id))->getArray();
             } else throw new Exception($stmt->error, 500);
         }
 
+        /**
+         * @throws ReflectionException
+         */
         public static function create() : static {
             $classObj = new ReflectionClass(get_called_class());
             $constructor = $classObj->getConstructor();
@@ -44,6 +50,9 @@
             return $instance;
         }
 
+        /**
+         * @throws ReflectionException
+         */
         public static function get(int $id) : static {
             $classObj = new ReflectionClass(get_called_class());
             $constructor = $classObj->getConstructor();
@@ -107,7 +116,7 @@
             else $this->update();
         }
 
-        public function insert() {
+        public function insert(): void {
             $table = self::getTable();
             /**
              * @var ReflectionProperty $prop
@@ -142,7 +151,10 @@
             $prop->setValue($this, $conn->insert_id);
         }
 
-        private function update() {
+        /**
+         * @throws Exception
+         */
+        private function update(): void {
             $table = self::getTable();
             /**
              * @var ReflectionProperty $prop
@@ -232,20 +244,33 @@
 
         /** @throws Exception */
         public function __set(string $name, $value): void {
-            $value = trim($value);
-            $length = strlen($value);
-
             if(property_exists($this, $name)) {
                 $property = new ReflectionProperty($this, $name);
-                $property->getAttributes(Immutable::class) and throw new Exception("$name is onveranderlijk", 500);
                 if($property->isPrivate()) $property->setAccessible(true);
-                $attributes = $property->getAttributes(Matches::class);
+                $attributes = $property->getAttributes(Column::class);
                 if(!empty($attributes)) {
-                    /** @var Matches $matches */
-                    $matches = $attributes[0]->newInstance();
-                    if($length < $matches->minLength) throw new Exception("$name moet minimaal $matches->minLength tekens lang zijn", 400);
-                    if($length > ($matches->maxLength === -1 ? INF : $matches->maxLength)) throw new Exception("$name mag maximaal $matches->maxLength tekens lang zijn", 400);
-                    $matches->regex->test($value) or throw new Exception("ongeldige $name opgegeven", 400);
+                    /** @var Column $column */
+                    $column = $attributes[0]->newInstance();
+
+                    if($column->immutable) throw new Exception("$name is onveranderlijk", 400);
+                    if(!$column->nullable && $value === null) throw new Exception("$name kan niet null zijn", 400);
+
+                    switch ($property->getType()->getName()) {
+                        case "string":
+                            $value = trim($value);
+                            $length = strlen($value);
+
+                            if($length < $column->minLength) throw new Exception("$name moet minimaal $column->minLength tekens lang zijn", 400);
+                            if($length > $column->maxLength) throw new Exception("$name mag maximaal $column->maxLength tekens lang zijn", 400);
+                            if($column->regexp !== null && !$column->regexp->test($value)) throw new Exception("ongeldige $name opgegeven", 400);
+                            break;
+                        case "int":
+                            if($value < $column->min) throw new Exception("$name moet minimaal $column->min zijn", 400);
+                            if($value > $column->max) throw new Exception("$name mag maximaal $column->max zijn", 400);
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 $property->setValue($this, $value);
             }
