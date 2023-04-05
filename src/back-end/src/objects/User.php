@@ -89,4 +89,19 @@ class User implements \JsonSerializable {
             "role" => $this->role
         ];
     }
+
+    public static function register(string $username, string $password, string $email, string $role = 'user'): User
+    {
+        try {
+            // Create the new user
+            return User::create($username, $password, $email, $role);
+        } catch (\mysqli_sql_exception $e) {
+            // Check for duplicate entry error code
+            if ($e->getCode() == 1062) {
+                throw new \Exception('Username or email already exists.', 409);
+            } else {
+                throw $e;
+            }
+        }
+    }
 }

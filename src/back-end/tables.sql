@@ -89,6 +89,16 @@ CREATE TABLE IF NOT EXISTS `VERKOOPORDERS` (
           ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
 
+CREATE TABLE IF NOT EXISTS `users` (
+    `userId` INT NOT NULL AUTO_INCREMENT,
+    `username` VARCHAR(20) NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(50) NOT NULL,
+    `role` ENUM('admin', 'user') NOT NULL DEFAULT 'user',
+    PRIMARY KEY (`userId`),
+    UNIQUE (`username`),
+    UNIQUE (`email`)
+    ) ENGINE = InnoDB;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
