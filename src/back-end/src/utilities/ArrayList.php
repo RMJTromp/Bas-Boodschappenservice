@@ -16,6 +16,7 @@
             $this->addAll($array);
         }
 
+        #[\ReturnTypeWillChange]
         public function getIterator() {
             return new \ArrayObject($this->array);
         }
