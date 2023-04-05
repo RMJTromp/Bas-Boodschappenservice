@@ -38,6 +38,10 @@
             $conn->select_db($dbName);
 
             !$conn->multi_query((new File("tables.sql"))->getContents()) and throw new Exception("Failed to initialize tables: {$conn->error}", 500);
+            // close all open statements
+            while($conn->more_results() && $conn->next_result()) {
+                if($result = $conn->store_result()) $result->free();
+            }
         }
 
         #[NoReturn]
