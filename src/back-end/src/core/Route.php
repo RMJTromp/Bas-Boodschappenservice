@@ -8,6 +8,7 @@
 
     register_shutdown_function(function() {
         if(!Route::$handled) API::printAndExit([], 404);
+        else if(!in_array(Request::get()->method, Route::$methods, true)) API::printAndExit([], 405);
     });
 
     class Route {
@@ -15,6 +16,7 @@
         private function __construct() {}
 
         public static bool $handled = false;
+        public static array $methods = [];
 
         /**
          * @param string|RegExp $path
@@ -25,8 +27,13 @@
             $request = Request::get();
             $pathname = urldecode($request->url->pathname);
             if((is_string($path) && strtolower($path) === strtolower($pathname)) || ($path instanceof RegExp && $path->test($pathname))) {
-                Route::$handled = true;
+
+                // keep track of all methods
+                if(is_string($method)) Route::$methods[] = $method;
+                else Route::$methods = array_merge(Route::$methods, $method);
+
                 if((is_string($method) && $method === $request->method) || (is_array($method) && in_array($request->method, $method, true))) {
+                    Route::$handled = true;
                     $refFunc = new ReflectionFunction($callback);
                     try {
                         if($path instanceof RegExp && $refFunc->getNumberOfParameters() === 2) $callback($request, $path->exec($pathname));
