@@ -157,4 +157,9 @@
             return $this->array[array_rand($this->array)];
         }
 
+        public function sort(callable $callback) : ArrayList {
+            usort($this->array, $callback);
+            return $this;
+        }
+
     }
