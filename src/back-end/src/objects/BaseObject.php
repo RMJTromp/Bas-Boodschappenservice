@@ -26,15 +26,24 @@
             [$prop, $column] = self::getPrimaryProperty();
 
             global $conn;
-            $stmt = $conn->prepare("SELECT {$column->name} FROM {$table->name}");
+            $stmt = $conn->prepare("SELECT * FROM {$table->name}");
             if($stmt->execute()) {
                 $res = $stmt->get_result();
                 $objects = [];
                 while($row = $res->fetch_assoc()) {
-                    $objects[] = $row[$column->name];
+                    $object = self::create();
+                    foreach($row as $key => $value) {
+                        unset($_res, $prop, $column);
+                        $_res = self::findProperty(fn(Column $column) => $column->name == $key);
+                        if($_res !== null) {
+                            [$prop, $column] = $_res;
+                            $prop->setValue($object, $value);
+                        }
+                    }
+                    $objects[] = $object;
                 }
 
-                return (new ArrayList($objects))->map(fn(int $id) => self::get($id))->getArray();
+                return $objects;
             } else throw new Exception($stmt->error, 500);
         }
 
