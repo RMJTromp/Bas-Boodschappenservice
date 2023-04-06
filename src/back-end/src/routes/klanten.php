@@ -12,31 +12,31 @@
         API::printAndExit($klanten);
     });
 
-    Route::handle(RegExp::compile("/^\/Klant\/(\d+)$/"), function(Request $request, array $matches) {
+    Route::handle(RegExp::compile("/^\/klant\/(\d+)$/"), function(Request $request, array $matches) {
         $id = intval($matches[1][0]);
-        $Klant = Klant::get($id);
+        $klant = Klant::get($id);
 
         switch($request->method) {
             case "GET":
-                API::printAndExit($Klant);
+                API::printAndExit($klant);
             case "DELETE":
-                $Klant->delete();
+                $klant->delete();
                 API::printAndExit([], ResponseCode::OK[0]);
             case "PATCH":
                 $_PATCH = $request->body;
-                $Klant->naam = !empty($_PATCH['naam']) ? $_PATCH['naam'] : $Klant->naam;
-                $Klant->adres = !empty($_PATCH['adres']) ? $_PATCH['adres'] : $Klant->adres;
-                $Klant->postcode = !empty($_PATCH['postcode']) ? $_PATCH['postcode'] : $Klant->postcode;
-                $Klant->woonplaats = !empty($_PATCH['woonplaats']) ? $_PATCH['woonplaats'] : $Klant->woonplaats;
-                $Klant->telefoon = !empty($_PATCH['telefoon']) ? $_PATCH['telefoon'] : $Klant->telefoon;
-                $Klant->save();
-                API::printAndExit($Klant);
+                $klant->naam = !empty($_PATCH['naam']) ? $_PATCH['naam'] : $klant->naam;
+                $klant->adres = !empty($_PATCH['adres']) ? $_PATCH['adres'] : $klant->adres;
+                $klant->postcode = !empty($_PATCH['postcode']) ? $_PATCH['postcode'] : $klant->postcode;
+                $klant->woonplaats = !empty($_PATCH['woonplaats']) ? $_PATCH['woonplaats'] : $klant->woonplaats;
+                $klant->telefoon = !empty($_PATCH['telefoon']) ? $_PATCH['telefoon'] : $klant->telefoon;
+                $klant->save();
+                API::printAndExit($klant);
             default:
                 API::printAndExit([], ResponseCode::METHOD_NOT_ALLOWED[0]);
         }
     });
 
-    Route::post("/Klant", function(Request $request) {
+    Route::post("/klant", function(Request $request) {
         try {
             API::printAndExit(Klant::create(
                 $request->body['naam'],
