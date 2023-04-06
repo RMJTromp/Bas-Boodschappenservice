@@ -127,4 +127,27 @@ class User implements \JsonSerializable {
             throw new \Exception($stmt->error, 500);
         }
     }
+
+    public static function searchUsers(string $searchQuery): array {
+        global $conn;
+        $searchQuery = "%{$searchQuery}%";
+        $stmt = $conn->prepare("SELECT userId FROM `users` WHERE username LIKE ? OR email LIKE ?");
+        $stmt->bind_param("ss", $searchQuery, $searchQuery);
+        $res = $stmt->execute();
+
+        if ($res) {
+            $users = new ArrayList();
+            $stmt->bind_result($userId);
+            while ($stmt->fetch()) {
+                $users->add($userId);
+            }
+
+            return $users->map(function ($userId) {
+                return User::get($userId);
+            })->getArray();
+        } else {
+            throw new \Exception($stmt->error, 500);
+        }
+    }
+//$searchResults = User::searchUsers('john');
 }

@@ -88,5 +88,27 @@ class Verkooporder implements \JsonSerializable {
             "verkoopDatum" => $this->verkoopDatum
         ];
     }
+
+    public static function searchVerkoopordersByDate(string $searchDate): array {
+        global $conn;
+        $stmt = $conn->prepare("SELECT verkOrdId FROM `VERKOOPORDERS` WHERE verkOrdDatum = ?");
+        $stmt->bind_param("s", $searchDate);
+        $res = $stmt->execute();
+
+        if ($res) {
+            $orders = new ArrayList();
+            $stmt->bind_result($verkOrdId);
+            while ($stmt->fetch()) {
+                $orders->add($verkOrdId);
+            }
+
+            return $orders->map(function ($verkOrdId) {
+                return Verkooporders::get($verkOrdId);
+            })->getArray();
+        } else {
+            throw new \Exception($stmt->error, 500);
+        }
+    }
+//$searchResults = Verkooporders::searchVerkoopordersByDate('2023-04-06');
 }
 

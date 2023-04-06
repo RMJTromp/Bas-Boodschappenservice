@@ -100,5 +100,26 @@ class Inkooporder implements \JsonSerializable {
             "inkoopDatum" => $this->inkoopDatum
         ];
     }
+    public static function searchInkoopordersByStatus(int $searchStatus): array {
+        global $conn;
+        $stmt = $conn->prepare("SELECT inkOrdId FROM `INKOOPORDERS` WHERE inkOrdStatus = ?");
+        $stmt->bind_param("i", $searchStatus);
+        $res = $stmt->execute();
+
+        if ($res) {
+            $orders = new ArrayList();
+            $stmt->bind_result($inkOrdId);
+            while ($stmt->fetch()) {
+                $orders->add($inkOrdId);
+            }
+
+            return $orders->map(function ($inkOrdId) {
+                return Inkooporders::get($inkOrdId);
+            })->getArray();
+        } else {
+            throw new \Exception($stmt->error, 500);
+        }
+    }
+    //$searchResults = Inkooporders::searchInkoopordersByStatus(1);
 }
 
