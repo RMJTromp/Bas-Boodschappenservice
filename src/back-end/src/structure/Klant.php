@@ -106,4 +106,22 @@ class Klant implements \JsonSerializable
             "telefoon" => $this->telefoon,
         ];
     }
+
+    function searchByNaam($naam) {
+        global $conn;
+
+        $query = "SELECT * FROM my_table Where naam LIKE ?";
+
+        $stmt = $mysqli->prepare($query);
+
+        $naam_param = "%" . $naam . "%";
+
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        $stmt->close();
+
+        return $result;
+    }
 }
