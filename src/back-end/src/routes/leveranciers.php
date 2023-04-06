@@ -4,17 +4,37 @@
     use Boodschappenservice\core\Route;
     use Boodschappenservice\objects\Leverancier;
     use Boodschappenservice\utilities\API;
-    use Boodschappenservice\utilities\Math;
+    use Boodschappenservice\utilities\ArrayList;
     use Boodschappenservice\utilities\RegExp;
     use Boodschappenservice\utilities\ResponseCode;
 
-    Route::get("/leveranciers", function(Request $request) {
-        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 100;
-        $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
-        $limit = Math::min(Math::max($limit, 1), 100);
-        $offset = Math::max($offset, 0);
+    Route::get("/leveranciers", function() {
+        $limit = intval($_GET['limit'] ?? 100);
+        $offset = intval($_GET['offset'] ?? 0);
+        $limit = min(max($limit, 1), 100);
+        $offset = max($offset, 0);
 
-        API::printAndExit(Leverancier::getAll($limit, $offset));
+        $search = strtolower($_GET['search'] ?? "");
+        $treshold = floatval($_GET['treshold'] ?? 0.5);
+
+        $leveranciers = new ArrayList(Leverancier::getAll());
+
+        if(!empty($search)) {
+            $searchLen = strlen($search);
+            $leveranciers = $leveranciers
+                ->map(function(Leverancier $leverancier) use ($search, $searchLen) {
+                    $naam = strtolower($leverancier->naam);
+                    return [
+                        'object' => $leverancier,
+                        'match' => 1 - (levenshtein($naam, $search) / max(strlen($naam), $searchLen))
+                    ];
+                })
+                ->sort(fn(array $a, array $b) => $b['match'] <=> $a['match'])
+                ->filter(fn(array $a) => $a['match'] > $treshold)
+                ->map(fn(array $a) => $a['object']);
+        }
+
+        API::printAndExit($leveranciers->slice($offset, $limit));
     });
 
     Route::handle(RegExp::compile("/^\/leverancier\/(\d+)$/"), function(Request $request, array $matches) {
