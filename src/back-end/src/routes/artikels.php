@@ -16,9 +16,14 @@
         $offset = max($offset, 0);
 
         $search = strtolower($_GET['search'] ?? "");
-        $treshold = floatval($_GET['treshold'] ?? 0.5);
+        $treshold = floatval($_GET['treshold'] ?? 0.4);
 
         $artikels = new ArrayList(Artikel::getAll());
+        $meta = [
+            'total' => Artikel::count(),
+            'limit' => $limit,
+            'offset' => $offset
+        ];
 
         if(!empty($search)) {
             $searchLen = strlen($search);
@@ -35,9 +40,14 @@
                 ->sort(fn(array $a, array $b) => $b['match'] <=> $a['match'])
                 ->filter(fn(array $a) => $a['match'] > $treshold)
                 ->map(fn(array $a) => $a['object']);
+
+            $meta['search'] = $search;
+            $meta['treshold'] = $treshold;
         }
 
-        API::printAndExit($artikels->slice($offset, $limit));
+        $artikels = $artikels->slice($offset, $limit);
+        $meta['results'] = $artikels->count();
+        API::printAndExit($artikels, meta: $meta);
     });
 
     Route::handle(RegExp::compile("/^\/artikel\/(\d+)$/"), function(Request $request, array $matches) {
