@@ -111,8 +111,10 @@ class Klant implements \JsonSerializable
         global $conn;
 
         $query = "SELECT * FROM klanten Where klantNaam LIKE ?";
+        $query1 = "SELECT * FROM klanten Where klantID LIKE ?";
+        $query2 = "SELECT * FROM klanten Where klantPostcode LIKE ?";
 
-        $stmt = $mysqli->prepare($query);
+        $stmt = $mysqli->prepare($query, $query1, $query2);
 
         $naam_param = "%" . $naam . "%";
 
@@ -123,5 +125,6 @@ class Klant implements \JsonSerializable
         $stmt->close();
 
         return $result;
+
     }
 }
