@@ -27,7 +27,7 @@
         #[Column("artOmschrijving",
             regexp: '/^[^\\s]+(?: [^\\s]+)*$/iu',
             minLength: 1,
-            maxLength: 12
+            maxLength: 60
         )]
         private string $omschrijving;
 
