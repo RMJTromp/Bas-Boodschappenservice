@@ -110,7 +110,7 @@ class Klant implements \JsonSerializable
     function searchByNaam($naam) {
         global $conn;
 
-        $query = "SELECT * FROM my_table Where naam LIKE ?";
+        $query = "SELECT * FROM klanten Where klantNaam LIKE ?";
 
         $stmt = $mysqli->prepare($query);
 
