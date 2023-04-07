@@ -13,7 +13,9 @@
         Route::$handled = true;
         Route::$methods = [ Request::get()->method ];
 
-        printAndExit(new File("../front-end/dist/index.html"));
+        $path = $REQUEST_URL->pathname;
+        if($path === "/") $path = "/index.html";
+        printAndExit(new File("../front-end/dist" . $path));
     } else {
         Route::get("/", fn() => API::printAndExit(null));
 
