@@ -47,6 +47,35 @@
             } else throw new Exception($stmt->error, 500);
         }
 
+        public static function random() : static {
+            $table = self::getTable();
+
+            global $conn;
+
+            $stmt = $conn->prepare("SELECT ROUND(RAND() * (SELECT COUNT(*) FROM {$table->name})) AS offset");
+            if($stmt->execute()) {
+                $res = $stmt->get_result();
+                $row = $res->fetch_assoc();
+                $offset = $row["offset"];
+
+                $stmt = $conn->prepare("SELECT * FROM {$table->name} LIMIT 1 OFFSET {$offset}");
+                if($stmt->execute()) {
+                    $res = $stmt->get_result();
+                    $row = $res->fetch_assoc();
+                    $object = self::create();
+                    foreach($row as $key => $value) {
+                        unset($_res, $prop, $column);
+                        $_res = self::findProperty(fn(Column $column) => $column->name == $key);
+                        if($_res !== null) {
+                            [$prop, $column] = $_res;
+                            $prop->setValue($object, $value);
+                        }
+                    }
+                    return $object;
+                } else throw new Exception($stmt->error, 500);
+            } else throw new Exception($stmt->error, 500);
+        }
+
         /**
          * @throws ReflectionException
          */
@@ -296,7 +325,7 @@
                     if($property->getAttributes(Sensitive::class)) return;
                     if($property->isPrivate()) $property->setAccessible(true);
                     $value = $property->isInitialized($this) ? $property->getValue($this) : null;
-                    if($value instanceof BaseObject) $value = self::getPrimaryProperty()[0]->getValue($this);
+//                    if($value instanceof BaseObject) $value = self::getPrimaryProperty()[0]->getValue($this);
                     $res[$name] = $value;
                 });
             return $res;
