@@ -67,7 +67,6 @@
         private string $woonplaats;
 
         public static function generateRandom() : Leverancier {
-
             $mockData = MockData::getInstance();
 
             $company = $mockData->companies->random();
