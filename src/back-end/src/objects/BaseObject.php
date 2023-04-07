@@ -47,6 +47,17 @@
             } else throw new Exception($stmt->error, 500);
         }
 
+        public static function count() : int {
+            $table = self::getTable();
+            global $conn;
+            $stmt = $conn->prepare("SELECT COUNT(*) AS count FROM {$table->name}");
+            if($stmt->execute()) {
+                $res = $stmt->get_result();
+                $row = $res->fetch_assoc();
+                return intval($row["count"] ?? 0);
+            } else throw new Exception($stmt->error, 500);
+        }
+
         public static function random() : static {
             $table = self::getTable();
 
