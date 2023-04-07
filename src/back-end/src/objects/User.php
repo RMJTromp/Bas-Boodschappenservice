@@ -89,4 +89,65 @@ class User implements \JsonSerializable {
             "role" => $this->role
         ];
     }
+
+    public static function register(string $username, string $password, string $email, string $role = 'user'): User
+    {
+        try {
+            // Create the new user
+            return User::create($username, $password, $email, $role);
+        } catch (\mysqli_sql_exception $e) {
+            // Check for duplicate entry error code
+            if ($e->getCode() == 1062) {
+                throw new \Exception('Username or email already exists.', 409);
+            } else {
+                throw $e;
+            }
+        }
+    }
+
+    public static function login(string $username, string $password): User
+    {
+        global $conn;
+        $stmt = $conn->prepare("SELECT userId, password FROM `users` WHERE username = ? LIMIT 1");
+        $stmt->bind_param("s", $username);
+        $res = $stmt->execute();
+
+        if ($res) {
+            $stmt->bind_result($userId, $hashedPassword);
+            if ($stmt->fetch()) {
+                if (password_verify($password, $hashedPassword)) {
+                    return User::get($userId);
+                } else {
+                    throw new \Exception("Invalid password.", 401);
+                }
+            } else {
+                throw new \Exception("User not found.", 404);
+            }
+        } else {
+            throw new \Exception($stmt->error, 500);
+        }
+    }
+
+    public static function searchUsers(string $searchQuery): array {
+        global $conn;
+        $searchQuery = "%{$searchQuery}%";
+        $stmt = $conn->prepare("SELECT userId FROM `users` WHERE username LIKE ? OR email LIKE ?");
+        $stmt->bind_param("ss", $searchQuery, $searchQuery);
+        $res = $stmt->execute();
+
+        if ($res) {
+            $users = new ArrayList();
+            $stmt->bind_result($userId);
+            while ($stmt->fetch()) {
+                $users->add($userId);
+            }
+
+            return $users->map(function ($userId) {
+                return User::get($userId);
+            })->getArray();
+        } else {
+            throw new \Exception($stmt->error, 500);
+        }
+    }
+//$searchResults = User::searchUsers('john');
 }
