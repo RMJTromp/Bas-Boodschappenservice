@@ -14,6 +14,7 @@
      * @property int $voorraad
      * @property int $minVoorraad
      * @property int $maxVoorraad
+     * @property ?int $locatie
      * @property Leverancier $leverancier
      */
     #[Table("ARTIKELEN")]
@@ -48,7 +49,7 @@
         private int $maxVoorraad;
 
         #[Column("artLocatie", nullable: true, min: 0)]
-        private int $locatie;
+        private ?int $locatie;
 
         #[Column("levId")]
         private int $_levId;
@@ -61,7 +62,7 @@
 
         public function __get(string $name) {
             if ($name === "leverancier") {
-                if ($this->leverancier === null)
+                if (empty($this->leverancier))
                     $this->leverancier = Leverancier::get($this->_levId);
                 return $this->leverancier;
             }
