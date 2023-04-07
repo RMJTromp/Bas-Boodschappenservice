@@ -325,7 +325,12 @@
                     if($property->getAttributes(Sensitive::class)) return;
                     if($property->isPrivate()) $property->setAccessible(true);
                     $value = $property->isInitialized($this) ? $property->getValue($this) : null;
-//                    if($value instanceof BaseObject) $value = self::getPrimaryProperty()[0]->getValue($this);
+                    if(!$property->isInitialized($this)) {
+                        $parentClass = (new ReflectionClass($class))->getParentClass();
+                        if($parentClass !== false && $parentClass->getName() === BaseObject::class) {
+                            $value = $this->__get($name);
+                        }
+                    }
                     $res[$name] = $value;
                 });
             return $res;
