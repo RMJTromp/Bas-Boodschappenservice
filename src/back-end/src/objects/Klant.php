@@ -6,6 +6,14 @@ use Boodschappenservice\attributes\Column;
 use Boodschappenservice\attributes\Table;
 use Boodschappenservice\utilities\MockData;
 
+/**
+ * @property-read int $id Klant ID
+ * @property string $naam Naam klant
+ * @property string $email E-mailadres klant
+ * @property string $adres Adres klant
+ * @property string $postcode Postcode klant
+ * @property string $woonplaats Woonplaats klant
+ */
 #[Table("KLANTEN")]
 class Klant extends BaseObject {
 
