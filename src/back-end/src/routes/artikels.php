@@ -18,7 +18,8 @@
         $search = strtolower($_GET['search'] ?? "");
         $treshold = floatval($_GET['treshold'] ?? 0.4);
 
-        $artikels = new ArrayList(Artikel::getAll());
+        $artikels = !empty($search) ? Artikel::getAll() : Artikel::getAll($limit, $offset);
+        $artikels = new ArrayList($artikels);
         $meta = [
             'total' => Artikel::count(),
             'limit' => $limit,
@@ -39,13 +40,13 @@
                 })
                 ->sort(fn(array $a, array $b) => $b['match'] <=> $a['match'])
                 ->filter(fn(array $a) => $a['match'] > $treshold)
-                ->map(fn(array $a) => $a['object']);
+                ->map(fn(array $a) => $a['object'])
+                ->slice($offset, $limit);
 
             $meta['search'] = $search;
             $meta['treshold'] = $treshold;
         }
 
-        $artikels = $artikels->slice($offset, $limit);
         $meta['results'] = $artikels->count();
         API::printAndExit($artikels, meta: $meta);
     });

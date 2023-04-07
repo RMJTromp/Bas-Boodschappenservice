@@ -17,7 +17,13 @@
         $search = strtolower($_GET['search'] ?? "");
         $treshold = floatval($_GET['treshold'] ?? 0.5);
 
-        $leveranciers = new ArrayList(Leverancier::getAll());
+        $leveranciers = !empty($search) ? Leverancier::getAll() : Leverancier::getAll($limit, $offset);
+        $leveranciers = new ArrayList($leveranciers);
+        $meta = [
+            'total' => Leverancier::count(),
+            'limit' => $limit,
+            'offset' => $offset
+        ];
 
         if(!empty($search)) {
             $searchLen = strlen($search);
@@ -31,10 +37,15 @@
                 })
                 ->sort(fn(array $a, array $b) => $b['match'] <=> $a['match'])
                 ->filter(fn(array $a) => $a['match'] > $treshold)
-                ->map(fn(array $a) => $a['object']);
+                ->map(fn(array $a) => $a['object'])
+                ->slice($offset, $limit);
+
+            $meta['search'] = $search;
+            $meta['treshold'] = $treshold;
         }
 
-        API::printAndExit($leveranciers->slice($offset, $limit));
+        $meta['results'] = $leveranciers->count();
+        API::printAndExit($leveranciers, meta: $meta);
     });
 
     Route::handle(RegExp::compile("/^\/leverancier\/(\d+)$/"), function(Request $request, array $matches) {

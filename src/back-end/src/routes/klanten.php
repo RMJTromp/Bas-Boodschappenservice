@@ -17,7 +17,13 @@
         $search = strtolower($_GET['search'] ?? "");
         $treshold = floatval($_GET['treshold'] ?? 0.5);
 
-        $klanten = new ArrayList(Klant::getAll());
+        $klanten = !empty($search) ? Klant::getAll() : Klant::getAll($limit, $offset);
+        $klanten = new ArrayList($klanten);
+        $meta = [
+            'total' => Klant::count(),
+            'limit' => $limit,
+            'offset' => $offset
+        ];
 
         if(!empty($search)) {
             $searchLen = strlen($search);
@@ -33,10 +39,15 @@
                 })
                 ->sort(fn(array $a, array $b) => $b['match'] <=> $a['match'])
                 ->filter(fn(array $a) => $a['match'] > $treshold)
-                ->map(fn(array $a) => $a['object']);
+                ->map(fn(array $a) => $a['object'])
+                ->slice($offset, $limit);
+
+            $meta['search'] = $search;
+            $meta['treshold'] = $treshold;
         }
 
-        API::printAndExit($klanten->slice($offset, $limit));
+        $meta['results'] = $klanten->count();
+        API::printAndExit($klanten, meta: $meta);
     });
 
     Route::handle(RegExp::compile("/^\/klant\/(\d+)$/"), function(Request $request, array $matches) {
