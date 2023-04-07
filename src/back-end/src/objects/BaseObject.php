@@ -153,9 +153,11 @@
             [$prop, $primaryColumn] = self::getPrimaryProperty();
 
             global $conn;
-            $stmt = $conn->prepare("SELECT FROM {$table->name} WHERE {$primaryColumn->name} = ?");
-            $stmt->bind_param("i", $id);
+            $stmt = $conn->prepare("DELETE FROM {$table->name} WHERE {$primaryColumn->name} = ?");
+            $value = $prop->getValue($this);
+            $stmt->bind_param("i", $value);
             if(!$stmt->execute()) throw new Exception($stmt->error, 500);
+            if($conn->error) throw new Exception($conn->error, 500);
         }
 
         public function save() : void {
