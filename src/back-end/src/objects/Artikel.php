@@ -17,7 +17,7 @@
      * @property ?int $locatie
      * @property Leverancier $leverancier
      */
-    #[Table("ARTIKELEN")]
+    #[Table("artikelen")]
     class Artikel extends BaseObject {
 
         #[Column("artId",

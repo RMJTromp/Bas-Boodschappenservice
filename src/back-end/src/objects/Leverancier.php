@@ -15,7 +15,7 @@
      * @property string $postcode Postcode leverancier
      * @property string $woonplaats Woonplaats leverancier
      */
-    #[Table("LEVERANCIERS")]
+    #[Table("leveranciers")]
     class Leverancier extends BaseObject{
 
         #[Column("levId",

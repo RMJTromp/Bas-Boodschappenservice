@@ -14,7 +14,7 @@ use Boodschappenservice\utilities\MockData;
  * @property string $postcode Postcode klant
  * @property string $woonplaats Woonplaats klant
  */
-#[Table("KLANTEN")]
+#[Table("klanten")]
 class Klant extends BaseObject {
 
     #[Column("klantId",
