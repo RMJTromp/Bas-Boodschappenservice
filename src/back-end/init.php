@@ -2,6 +2,7 @@
 
     namespace {
 
+        use Boodschappenservice\core\Request;
         use Boodschappenservice\utilities\API;
         use Boodschappenservice\utilities\ArrayList;
         use Boodschappenservice\utilities\File;
@@ -11,9 +12,18 @@
         use JetBrains\PhpStorm\NoReturn;
 
         require_once './vendor/autoload.php';
+        if(strtoupper($_SERVER['REQUEST_METHOD'] ?? "GET") === "OPTIONS") {
+            header("Access-Control-Allow-Origin: *");
+            header("Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS");
+            header("Access-Control-Allow-Headers: Content-Type, Authorization");
+            http_send_status(201);
+            exit();
+        }
         require_once './error_handler.php';
 
         header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization");
         !(new File("../../.env"))->exists() and API::printAndExit("Environment file not initialized", 500);
         Dotenv::createImmutable("../../")->load();
         define("BASE_DIRECTORY", Path::resolve("./"));
