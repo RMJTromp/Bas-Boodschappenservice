@@ -32,13 +32,15 @@ export function Leveranciers() {
 
     // check searchInput for changes after no action for 500ms
     let searchTimeout;
-    const doneTyping = () => {}
+    const doneTyping = () => getLeveranciers(searchInput.value.trim());
     const inputEvent = () => {
         if(searchTimeout) clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => doneTyping(), 500);
+        searchTimeout = setTimeout(() => doneTyping(), 200);
     };
     searchInput.oninput = inputEvent;
-    //
+    searchInput.onchange = inputEvent;
+    searchInput.onkeyup = inputEvent;
+    searchInput.value = url.searchParams.get("search") || "";
 
     newButton.onclick = () => {
         document.body.append(<Modal>
@@ -75,28 +77,49 @@ export function Leveranciers() {
         </Modal>);
     }
 
-    fetch(`http://api.boodschappenservice.loc/leveranciers?limit=100&offset=${(page - 1) * 100}`)
-        .then(res => res.json())
-        .then((res) => {
-            loader.remove();
-            const maxPage = Math.ceil(res.meta.total / 100);
-            previousPage.href = page !== 1 ? `/leveranciers?page=${page-1}` : "";
-            if(page == 1) previousPage.setAttribute("disabled", "true");
-            else previousPage.removeAttribute("disabled");
-            nextPage.href = page !== maxPage ? `/leveranciers?page=${page+1}` : "";
-            if(page === maxPage) nextPage.setAttribute("disabled", "true");
-            else nextPage.removeAttribute("disabled");
-            pagination.innerText = `${page} / ${maxPage}`;
-            table.append(...res.response.map(leverancier => {
-                return (
-                    <a href={`/leverancier/${leverancier.id}`} className="leverancier">
-                        <p>{leverancier.naam}</p>
-                        <p>{leverancier.contact}</p>
-                        <p>{leverancier.email}</p>
-                    </a>
-                )
-            }));
-        })
+    const getLeveranciers = (search = "") => {
+        if(search) {
+            let _url = new URL(window.location.href);
+            if(_url.searchParams.get("search") !== search) {
+                _url.searchParams.set("search", search);
+                window.history.replaceState({}, "", _url.href);
+            }
+        }
+
+        fetch(`http://api.boodschappenservice.loc/leveranciers?limit=100&offset=${(page - 1) * 100}&search=${search}`)
+            .then(res => res.json())
+            .then((res) => {
+                loader.remove();
+                const maxPage = Math.ceil((search ? res.meta.results : res.meta.total) / 100);
+                previousPage.href = (() => {
+                    let _url = new URL(window.location.href);
+                    _url.searchParams.set("page", (page-1).toString());
+                    return page !== 1 ? _url.href : "";
+                })();
+                if(page == 1) previousPage.setAttribute("disabled", "true");
+                else previousPage.removeAttribute("disabled");
+                nextPage.href = (() => {
+                    let _url = new URL(window.location.href);
+                    _url.searchParams.set("page", (page+1).toString());
+                    return page !== maxPage ? _url.href : "";
+                })();
+                if(page === maxPage) nextPage.setAttribute("disabled", "true");
+                else nextPage.removeAttribute("disabled");
+                pagination.innerText = `${page} / ${maxPage}`;
+                table.innerHTML = "";
+                table.append(...res.response.map(leverancier => {
+                    return (
+                        <a href={`/leverancier/${leverancier.id}`} className="leverancier">
+                            <p>{leverancier.naam}</p>
+                            <p>{leverancier.contact}</p>
+                            <p>{leverancier.email}</p>
+                        </a>
+                    )
+                }));
+            })
+    }
+
+    getLeveranciers(searchInput.value.trim());
 
     return (
         <section id="leveranciers">

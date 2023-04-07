@@ -7,7 +7,7 @@ export interface ModalElement extends HTMLDivElement {
 }
 
 export default function Modal(props) {
-    const modalElement : ModalElement = <div className="modal"></div>;
+    const modalElement : ModalElement = <div className="modal" open></div>;
     const card : HTMLDivElement = <div className="card"></div>;
     modalElement.append(card);
 

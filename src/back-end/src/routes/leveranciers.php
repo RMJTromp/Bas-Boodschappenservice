@@ -30,9 +30,11 @@
             $leveranciers = $leveranciers
                 ->map(function(Leverancier $leverancier) use ($search, $searchLen) {
                     $naam = strtolower($leverancier->naam);
+                    $match = 1 - (levenshtein($naam, $search) / max(strlen($naam), $searchLen));
+                    if(str_contains($naam, $search)) $match = ($match + 1) / 2;
                     return [
                         'object' => $leverancier,
-                        'match' => 1 - (levenshtein($naam, $search) / max(strlen($naam), $searchLen))
+                        'match' => $match
                     ];
                 })
                 ->sort(fn(array $a, array $b) => $b['match'] <=> $a['match'])
