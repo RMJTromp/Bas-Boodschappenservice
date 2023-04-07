@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS `ARTIKELEN` (
     `artOmschrijving` VARCHAR(60) NOT NULL,
     `artInkoop` DOUBLE NULL,
     `artVerkoop` DOUBLE NULL,
+    `artVoorraad` INT NOT NULL,
     `artMinVoorraad` INT NOT NULL,
     `artMaxVoorraad` INT NOT NULL,
     `artLocatie` INT NULL,
