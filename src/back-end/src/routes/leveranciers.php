@@ -66,13 +66,12 @@
         $_GET = $request->url->searchParams;
         $_POST = $request->body;
 
-
-        $amount = $request->url->searchParams["amount"] ?? 1;
+        $amount = $_GET["amount"] ?? 1;
         if($amount < 1) API::printAndExit([], ResponseCode::BAD_REQUEST[0], "Amount must be at least 1");
         else if($amount > 100) API::printAndExit([], ResponseCode::BAD_REQUEST[0], "Amount must be at most 100");
 
         if($amount === 1) {
-            $leverancier = !isset($_GET['random']) ? Leverancier::generateRandom() : Leverancier::create();
+            $leverancier = isset($_GET['random']) ? Leverancier::generateRandom() : Leverancier::create();
 
             if(!empty($_POST['naam'])) $leverancier->naam = $_POST['naam'];
             if(!empty($_POST['contact'])) $leverancier->contact = $_POST['contact'];
