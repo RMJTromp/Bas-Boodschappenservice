@@ -15,7 +15,9 @@
 
         $path = $REQUEST_URL->pathname;
         if($path === "/") $path = "/index.html";
-        printAndExit(new File("../front-end/dist" . $path));
+        $file = new File("../front-end/dist" . $path);
+        if(!$file->isFile()) $file = new File("../front-end/dist/index.html");
+        printAndExit($file);
     } else {
         Route::get("/", fn() => API::printAndExit(null));
 
