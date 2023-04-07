@@ -13,6 +13,7 @@
         require_once './vendor/autoload.php';
         require_once './error_handler.php';
 
+        header("Access-Control-Allow-Origin: *");
         !(new File("../../.env"))->exists() and API::printAndExit("Environment file not initialized", 500);
         Dotenv::createImmutable("../../")->load();
         define("BASE_DIRECTORY", Path::resolve("./"));

@@ -11,7 +11,7 @@
     Route::get("/leveranciers", function() {
         $limit = intval($_GET['limit'] ?? 100);
         $offset = intval($_GET['offset'] ?? 0);
-        $limit = min(max($limit, 1), 100);
+        $limit = min(max($limit, 0), 100);
         $offset = max($offset, 0);
 
         $search = strtolower($_GET['search'] ?? "");

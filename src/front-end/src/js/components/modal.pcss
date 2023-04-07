@@ -1,0 +1,27 @@
+div.modal {
+    position: fixed;
+    inset: 0;
+    background: #00000061;
+    display: none;
+
+    > div.card {
+        min-width: 300px;
+        width: fit-content;
+
+        > header {
+            margin-bottom: 15px;
+        }
+
+        > footer {
+            margin-top: 15px;
+            display: flex;
+            justify-content: end;
+            gap: 1rem;
+        }
+    }
+
+    &[open] {
+        display: grid;
+        place-items: center;
+    }
+}
