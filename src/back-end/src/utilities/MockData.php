@@ -8,10 +8,11 @@
      * @property-read ArrayList $plaats
      * @property-read ArrayList $street
      * @property-read ArrayList $surnames
+     * @property-read ArrayList $products
      */
     class MockData {
 
-        private ArrayList $companies, $names, $plaats, $street, $surnames;
+        private ArrayList $companies, $names, $plaats, $street, $surnames, $products;
 
         private static ?MockData $instance = null;
 
@@ -28,7 +29,7 @@
             if(property_exists($this, $name)) {
                 if(!isset($this->$name)) {
                     $file = new File("mock_data/{$name}.json");
-                    $arr = JSON::decode($file);
+                    $arr = JSON::decode($file, true);
                     $list = new ArrayList($arr);
                     $this->$name = $list;
                 }
