@@ -2,108 +2,68 @@
 
 namespace Boodschappenservice\objects;
 
-use Boodschappenservice\utilities\ArrayList;
+use Boodschappenservice\attributes\Column;
+use Boodschappenservice\attributes\Table;
+use Boodschappenservice\utilities\MockData;
 
-class Klant implements \JsonSerializable
-{
+#[Table("KLANTEN")]
+class Klant extends BaseObject {
 
-    /**
-     * @return Array<Klant>
-     * @throws \Exception
-     */
-    public static function getAll(): array
-    {
-        global $conn;
-        $stmt = $conn->prepare("SELECT id FROM `klanten`");
-        $res = $stmt->execute();
-        if ($res) {
-            $klanten = new ArrayList();
-            $stmt->bind_result($id);
-            while ($stmt->fetch()) {
-                $klanten->add($id);
-            }
+    #[Column("klantId",
+        primary: true,
+        immutable: true
+    )]
+    private int $id;
 
-            return $klanten->map(function ($id) {
-                return Klant::get($id);
-            })->getArray();
-        } else throw new \Exception($stmt->error, 500);
+    #[Column("klantNaam",
+        regexp: '/^[\\w@&+-]+(?: [\\w@&+-]+)*$/iu',
+        minLength: 3,
+        maxLength: 15
+    )]
+    private string $naam;
+
+    #[Column("klantEmail",
+        regexp: '/^[\\w\\-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$/u',
+        minLength: 3,
+        maxLength: 320
+    )]
+    private string $email;
+
+    #[Column("klantAdres",
+        regexp: '/^[^\\s]+(?: [^\\s]+)*$/iu',
+        minLength: 3,
+        maxLength: 30
+    )]
+    private string $adres;
+
+    #[Column("klantPostcode",
+        regexp: '/^\\d{4}[a-z]{2}$/iu',
+        minLength: 6,
+        maxLength: 6
+    )]
+    private string $postcode;
+
+    #[Column("klantWoonplaats",
+        regexp: '/^[^\\s]+(?: [^\\s]+)*$/iu',
+        minLength: 3,
+        maxLength: 25
+    )]
+    private string $woonplaats;
+
+    public static function generateRandom() : Klant {
+        $mockData = MockData::getInstance();
+
+        $naam = $mockData->names->random() . " " . $mockData->surnames->random();
+        $email = strtolower(MockData::strip($naam) . "@gmail.com");
+
+        $klant = Klant::create();
+        $klant->naam = $naam;
+        $klant->email = $email;
+        $klant->adres = $mockData->street->random() . " " . rand(1, 350);
+        $klant->postcode = rand(1000, 9999) . chr(rand(65, 90)) . chr(rand(65, 90));
+        $klant->woonplaats = $mockData->plaats->random();
+        $klant->save();
+        return $klant;
     }
 
-    /**
-     * @throws \Exception
-     */
-    public static function create(string $naam, string $adres, string $postcode, string $woonplaats, string $telefoon): Klant
-    {
-        global $conn;
-        $stmt = $conn->prepare("INSERT INTO `klanten` (naam, adres, postcode, woonplaats, telefoon) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssss", $naam, $adres, $postcode, $woonplaats, $telefoon);
-        $res = $stmt->execute();
-        if ($res) {
-            $id = $conn->insert_id;
-            return Klant::get($id);
-        } else throw new \Exception($stmt->error, 500);
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public static function get(int $id): Klant
-    {
-        return new Klant($id);
-    }
-
-    public int $id;
-
-    public string $naam, $adres, $postcode, $woonplaats, $telefoon;
-
-    /**
-     * @throws \Exception
-     */
-    private function __construct(int $id)
-    {
-        global $conn;
-        $stmt = $conn->prepare("SELECT * FROM `klanten` WHERE klantId = ?");
-        $stmt->bind_param("i", $id);
-        $res = $stmt->execute();
-        if ($res) {
-            $stmt->bind_result($id, $naam, $adres, $postcode, $woonplaats, $telefoon);
-            if ($stmt->fetch() === null)
-                throw new \Exception("Klant met id $id bestaat niet", 404);
-
-            $this->id = $id;
-            $this->naam = $naam;
-            $this->adres = $adres;
-            $this->postcode = $postcode;
-            $this->woonplaats = $woonplaats;
-            $this->telefoon = $telefoon;
-        } else throw new \Exception($stmt->error, 500);
-    }
-
-    public function save()
-    {
-        global $conn;
-        $stmt = $conn->prepare("UPDATE `klanten` SET klantNaam = ?, klantAdres = ?, klantPostcode = ?, klantPlaats = ?, klantTelefoon = ? WHERE klantId = ?");
-        $stmt->bind_param("ssssssi", $this->naam, $this->adres, $this->postcode, $this->woonplaats, $this->telefoon, $this->id);
-        if (!$stmt->execute()) throw new \Exception($stmt->error, 500);
-    }
-
-    public function delete()
-    {
-        global $conn;
-        $stmt = $conn->prepare("DELETE FROM `klanten` WHERE id = ?");
-        $stmt->bind_param("i", $this->id);
-        if (!$stmt->execute()) throw new \Exception($stmt->error, 500);
-    }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            "id" => $this->id,
-            "naam" => $this->naam,
-            "adres" => $this->adres,
-            "postcode" => $this->postcode,
-            "woonplaats" => $this->woonplaats,
-            "telefoon" => $this->telefoon,
-        ];
-    }
 }
