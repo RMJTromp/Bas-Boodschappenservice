@@ -17,7 +17,7 @@
          * @return static[]
          * @throws Exception
          */
-        public static function getAll() : array {
+        public static function getAll(int $limit = 100, int $offset = 0) : array {
             $table = self::getTable();
             /**
              * @var ReflectionProperty $prop
@@ -26,7 +26,7 @@
             [$prop, $column] = self::getPrimaryProperty();
 
             global $conn;
-            $stmt = $conn->prepare("SELECT * FROM {$table->name}");
+            $stmt = $conn->prepare("SELECT * FROM {$table->name} LIMIT {$limit} OFFSET {$offset}");
             if($stmt->execute()) {
                 $res = $stmt->get_result();
                 $objects = [];
