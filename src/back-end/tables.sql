@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `LEVERANCIERS` (
 
 CREATE TABLE IF NOT EXISTS `ARTIKELEN` (
     `artId` INT NOT NULL AUTO_INCREMENT,
-    `artOmschrijving` VARCHAR(12) NOT NULL,
+    `artOmschrijving` VARCHAR(60) NOT NULL,
     `artInkoop` DOUBLE NULL,
     `artVerkoop` DOUBLE NULL,
     `artMinVoorraad` INT NOT NULL,
