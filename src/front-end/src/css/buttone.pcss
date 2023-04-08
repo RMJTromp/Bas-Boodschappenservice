@@ -1,0 +1,38 @@
+button, a[role="button"] {
+    cursor: pointer;
+    text-align: center;
+    min-width: 60px;
+    min-height: 32px;
+    width: fit-content;
+    transition: background-color .17s ease,color .17s ease;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 16px;
+    color: black;
+    background-color: transparent;
+    padding: 0 16px; /* 11px 16px */
+    border-radius: 5px;
+    display: inline-flex;
+    gap: .5em;
+    justify-content: center;
+    align-items: center;
+
+    &.block {
+        display: block;
+        width: stretch;
+    }
+
+    &:hover:not(:disabled) {
+        text-decoration: underline;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+
+    &.primary {
+        color: #ce000c;
+        background: rgba(206, 0, 12, 0.1);
+    }
+}

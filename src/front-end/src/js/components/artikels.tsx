@@ -2,7 +2,7 @@ import { h } from "dom-chef";
 import Codicon from "./codicon";
 import Modal from "./modal";
 
-export function Leveranciers() {
+export function Artikels() {
     const url = new URL(window.location.href);
     const page = Math.max(parseInt(url.searchParams.get("page")) || 1, 1);
 
@@ -10,7 +10,7 @@ export function Leveranciers() {
     const container : HTMLDivElement = (
         <div className="container">
             <div className="title">
-                <h1>Leveranciers {loader = <Codicon name={"loading"} style={{animation: "rotate 1s linear infinite"}}/>}</h1>
+                <h1>Artikels {loader = <Codicon name={"loading"} style={{animation: "rotate 1s linear infinite"}}/>}</h1>
                 <div style={{display: "flex", gap:"1rem"}}>
                     {generateButton = <button>Genereren</button>}
                     {newButton = <button>Nieuw</button>}
@@ -31,13 +31,13 @@ export function Leveranciers() {
     );
 
     generateButton.onclick = () => {
-        fetch("http://api.boodschappenservice.loc/leverancier?random&amount=100", {method: "POST"})
-            .then(() => getLeveranciers())
+        fetch("http://api.boodschappenservice.loc/artikel?random&amount=100", {method: "POST"})
+            .then(() => getArtikels())
     }
 
     // check searchInput for changes after no action for 500ms
     let searchTimeout;
-    const doneTyping = () => getLeveranciers(searchInput.value.trim());
+    const doneTyping = () => getArtikels(searchInput.value.trim());
     const inputEvent = () => {
         if(searchTimeout) clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => doneTyping(), 200);
@@ -50,10 +50,10 @@ export function Leveranciers() {
     newButton.onclick = () => {
         const modal = <Modal>
             <header>
-                <h2>Nieuwe Leverancier</h2>
+                <h2>Nieuwe artikel</h2>
             </header>
             <main>
-                <h4>Leverancier</h4>
+                <h4>artikel</h4>
                 <label>Naam
                     <input type="text" id={"naam"}/>
                 </label>
@@ -81,7 +81,7 @@ export function Leveranciers() {
                 <button onclick={() => modal.open = false}>Annuleren</button>
                 <button class={"primary"} onclick={function() {
                     this.disabled = true;
-                    fetch(`http://api.boodschappenservice.loc/leverancier`, {
+                    fetch(`http://api.boodschappenservice.loc/artikel`, {
                         method: "POST",
                         body: JSON.stringify({
                             naam: modal.querySelector("input#naam").value,
@@ -97,7 +97,7 @@ export function Leveranciers() {
                     }).then(async (res) => {
                         if(res.status === 200) {
                             modal.open = false;
-                            getLeveranciers();
+                            getArtikels();
                         } else {
                             const response = await res.json();
                             modal.querySelector("main > div.alert")?.remove();
@@ -116,7 +116,7 @@ export function Leveranciers() {
         document.body.append(modal);
     }
 
-    const getLeveranciers = (search = "") => {
+    const getArtikels = (search = "") => {
         if(search) {
             let _url = new URL(window.location.href);
             if(_url.searchParams.get("search") !== search) {
@@ -125,7 +125,7 @@ export function Leveranciers() {
             }
         }
 
-        fetch(`http://api.boodschappenservice.loc/leveranciers?limit=100&offset=${(page - 1) * 100}&search=${search}`)
+        fetch(`http://api.boodschappenservice.loc/artikels?limit=100&offset=${(page - 1) * 100}&search=${search}`)
             .then(res => res.json())
             .then((res) => {
                 loader.remove();
@@ -146,49 +146,49 @@ export function Leveranciers() {
                 else nextPage.removeAttribute("disabled");
                 pagination.innerText = `${page} / ${maxPage}`;
                 table.innerHTML = "";
-                table.append(...res.response.map(leverancier => {
-                    const el = <div className="leverancier">
-                        <p>{leverancier.naam}</p>
-                        <p>{leverancier.contact}<br/><a href={`mailto:${leverancier.email}`}
-                                                        style={{textTransform: "lowercase"}}>{leverancier.email}</a></p>
-                        <p>{leverancier.adres}, {leverancier.postcode}<br/>{leverancier.woonplaats}</p>
+                table.append(...res.response.map(artikel => {
+                    const el = <div className="artikel">
+                        <p>{artikel.naam}</p>
+                        <p>{artikel.contact}<br/><a href={`mailto:${artikel.email}`}
+                                                        style={{textTransform: "lowercase"}}>{artikel.email}</a></p>
+                        <p>{artikel.adres}, {artikel.postcode}<br/>{artikel.woonplaats}</p>
                         <div className="controls">
                             <a onclick={() => {
                                 let naamInput, adresInput, postcodeInput, plaatsInput, contactInput, emailInput;
                                 const modal = <Modal>
                                     <header>
-                                        <h2>Wijzig Leverancier</h2>
+                                        <h2>Wijzig artikel</h2>
                                     </header>
                                     <main>
-                                        <h4>Leverancier</h4>
+                                        <h4>artikel</h4>
                                         <label>Naam
-                                            {naamInput = <input type="text" value={leverancier.naam}/>}
+                                            {naamInput = <input type="text" value={artikel.naam}/>}
                                         </label>
                                         <div style={{display: "grid", gridTemplateColumns: "65% 31%", gap: "1rem"}}>
                                             <label>Adres
-                                                {adresInput = <input type="text" value={leverancier.adres}/>}
+                                                {adresInput = <input type="text" value={artikel.adres}/>}
                                             </label>
                                             <label>Postcode
-                                                {postcodeInput = <input type="text" style={{textTransform: "uppercase"}} value={leverancier.postcode}/>}
+                                                {postcodeInput = <input type="text" style={{textTransform: "uppercase"}} value={artikel.postcode}/>}
                                             </label>
                                         </div>
                                         <label>Plaats
-                                            {plaatsInput = <input type="text" value={leverancier.woonplaats}/>}
+                                            {plaatsInput = <input type="text" value={artikel.woonplaats}/>}
                                         </label>
 
                                         <h4 style={{marginTop: "15px"}}>Contactpersoon</h4>
                                         <label>Volledige Naam
-                                            {contactInput = <input type="text" value={leverancier.contact}/>}
+                                            {contactInput = <input type="text" value={artikel.contact}/>}
                                         </label>
                                         <label>E-mail
-                                            {emailInput = <input type="email" value={leverancier.email}/>}
+                                            {emailInput = <input type="email" value={artikel.email}/>}
                                         </label>
                                     </main>
                                     <footer>
                                         <button onclick={() => modal.open = false}>Annuleren</button>
                                         <button class={"primary"} onclick={function() {
                                             this.disabled = true;
-                                            fetch(`http://api.boodschappenservice.loc/leverancier/${leverancier.id}`, {
+                                            fetch(`http://api.boodschappenservice.loc/artikel/${artikel.id}`, {
                                                 method: "PATCH",
                                                 body: JSON.stringify({
                                                     naam: naamInput.value,
@@ -204,7 +204,7 @@ export function Leveranciers() {
                                             }).then(async (res) => {
                                                 if(res.status === 200) {
                                                     modal.open = false;
-                                                    getLeveranciers();
+                                                    getArtikels();
                                                 } else {
                                                     const response = await res.json();
                                                     modal.querySelector("main > div.alert")?.remove();
@@ -223,7 +223,7 @@ export function Leveranciers() {
                                 document.body.append(modal);
                             }}><Codicon name={"pencil"}/></a>
                             <a onClick={() => {
-                                fetch(`http://api.boodschappenservice.loc/leverancier/${leverancier.id}`, {method: "DELETE"})
+                                fetch(`http://api.boodschappenservice.loc/artikel/${artikel.id}`, {method: "DELETE"})
                                     .then(res => {
                                         if(res.status === 200) el.remove();
                                     })
@@ -235,10 +235,10 @@ export function Leveranciers() {
             })
     }
 
-    getLeveranciers(searchInput.value.trim());
+    getArtikels(searchInput.value.trim());
 
     return (
-        <section id="leveranciers">
+        <section id="artikels">
             {container}
         </section>
     )

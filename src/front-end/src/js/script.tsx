@@ -2,6 +2,7 @@ import { h } from "dom-chef";
 import Sidebar from "./components/sidebar";
 import "./utilities/windowBuild";
 import {Leveranciers} from "./components/leveranciers";
+import {Artikels} from "./components/artikels";
 const logo = require("../img/logo.png");
 
 
@@ -12,6 +13,8 @@ function build() {
     main.innerHTML = "";
     if(url.pathname === "/leveranciers") {
         main.append(<Leveranciers/>);
+    } else if(url.pathname === "/artikels") {
+        main.append(<Artikels/>);
     }
 
     console.log("buidling")

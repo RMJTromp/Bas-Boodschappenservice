@@ -1,6 +1,6 @@
 import { h } from "dom-chef";
 
-export function Codicon(props) {
+export default function Codicon(props) {
     return <i className={`codicon codicon-${props.name}`} />;
 }
 

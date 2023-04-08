@@ -1,0 +1,79 @@
+button, a[role="button"] {
+    cursor: pointer;
+    text-align: center;
+    min-width: 60px;
+    min-height: 32px;
+    width: fit-content;
+    transition: background-color .17s ease,color .17s ease;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 16px;
+    color: black;
+    background-color: transparent;
+    padding: 0 16px; /* 11px 16px */
+    border-radius: 8px;
+    display: inline-flex;
+    gap: .5em;
+    justify-content: center;
+    align-items: center;
+
+    &:is(a) {
+        cursor: default;
+        font-weight: normal;
+        line-height: 32px;
+
+        &[href] {
+            cursor: pointer;
+            text-decoration: none;
+        }
+    }
+
+    &.block {
+        display: block;
+        width: stretch;
+    }
+
+    &:hover:not(:disabled) {
+        text-decoration: underline;
+    }
+
+    &.outlined {
+        background-color: transparent;
+        border: 1px solid white;
+
+        &:hover {
+            border: 1px solid white;
+            text-decoration: none;
+            background-color: transparent;
+        }
+
+        &:active {
+            background-color: white;
+            border-color: white;
+        }
+    }
+
+    &:is(.primary,.success,.danger,.warning,.info) {
+        color: white;
+        background-color: rgb(var(--color));
+        &:hover:not(:disabled), &:active:not(:disabled) { background-color: hsl(var(--color-h), calc(var(--color-s) * 0.7), calc(var(--color-l) * .8)); text-decoration: none; }
+        &:disabled {
+            background-color: hsl(var(--color-h), calc(var(--color-s) * .6), calc(var(--color-l) * .6));
+            color: #ffffff85
+        }
+
+        &.outlined {
+            color: rgb(var(--color));
+            border: 1px solid rgb(var(--color));
+            background-color: transparent;
+
+            &:hover { background-color: rgb(var(--color)); border-color: rgb(var(--color)); color: white; }
+            &:active { background-color: rgb(var(--color)); border-color: rgb(var(--color)); }
+        }
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+}
