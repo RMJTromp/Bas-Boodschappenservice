@@ -37,13 +37,11 @@ CREATE TABLE IF NOT EXISTS `ARTIKELEN` (
 CREATE TABLE IF NOT EXISTS `INKOOPORDERS` (
     `inkOrdId` INT NOT NULL AUTO_INCREMENT,
     `levId` INT NOT NULL,
-    `inkOrdDatum` DATE NOT NULL,
+    `inkOrdDatum` INT NOT NULL,
     `artId` INT NOT NULL,
     `inkOrdBestAantal` INT NOT NULL,
     `inkOrdStatus` TINYINT NOT NULL DEFAULT 0,
     PRIMARY KEY (`inkOrdId`),
-    UNIQUE INDEX `artId_UNIQUE` (`artId` ASC) VISIBLE,
-    UNIQUE INDEX `levId_UNIQUE` (`levId` ASC) VISIBLE,
     UNIQUE INDEX `inkOrdId_UNIQUE` (`inkOrdId` ASC) VISIBLE,
     CONSTRAINT `leverancier id`
      FOREIGN KEY (`levId`)
@@ -72,12 +70,10 @@ CREATE TABLE IF NOT EXISTS `VERKOOPORDERS` (
     `verkOrdId` INT NOT NULL AUTO_INCREMENT,
     `klantId` INT NOT NULL,
     `artId` INT NOT NULL,
-    `verkOrdDatum` DATE NOT NULL,
+    `verkOrdDatum` INT NOT NULL,
     `verkOrdBestAantal` INT NOT NULL,
     `verkOrdStatus` TINYINT NOT NULL DEFAULT 1,
     PRIMARY KEY (`verkOrdId`),
-    UNIQUE INDEX `klantId_UNIQUE` (`klantId` ASC) VISIBLE,
-    UNIQUE INDEX `VERKOOPORDERScol_UNIQUE` (`artId` ASC) VISIBLE,
     UNIQUE INDEX `verkOrdId_UNIQUE` (`verkOrdId` ASC) VISIBLE,
     CONSTRAINT `artikels id`
       FOREIGN KEY (`artId`)

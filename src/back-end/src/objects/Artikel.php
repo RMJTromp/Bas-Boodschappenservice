@@ -3,6 +3,7 @@
     namespace Boodschappenservice\objects;
 
     use Boodschappenservice\attributes\Column;
+    use Boodschappenservice\attributes\ProxyProperty;
     use Boodschappenservice\attributes\Table;
     use Boodschappenservice\utilities\MockData;
 
@@ -60,6 +61,7 @@
         #[Column("levId")]
         private int $_levId;
 
+        #[ProxyProperty("_levId")]
         private ?Leverancier $leverancier;
 
         protected function __construct(int $id = -1) {
@@ -97,7 +99,7 @@
             $artikel->maxVoorraad = rand(250, 500);
             $artikel->voorraad = rand(0, $artikel->maxVoorraad);
             $artikel->foto = $product['foto'];
-            $artikel->leverancier = Leverancier::random();
+            $artikel->leverancier = Leverancier::random() ?? Leverancier::generateRandom();
             $artikel->_levId = $artikel->leverancier->id; // yes, smh
             $artikel->save();
 

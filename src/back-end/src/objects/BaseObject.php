@@ -3,6 +3,7 @@
     namespace Boodschappenservice\objects;
 
     use Boodschappenservice\attributes\Column;
+    use Boodschappenservice\attributes\ProxyProperty;
     use Boodschappenservice\attributes\Sensitive;
     use Boodschappenservice\attributes\Table;
     use Boodschappenservice\utilities\ArrayList;
@@ -58,7 +59,7 @@
             } else throw new Exception($stmt->error, 500);
         }
 
-        public static function random() : static {
+        public static function random() : ?static {
             $table = self::getTable();
 
             global $conn;
@@ -67,23 +68,25 @@
             if($stmt->execute()) {
                 $res = $stmt->get_result();
                 $row = $res->fetch_assoc();
-                $offset = $row["offset"];
+                if($res->num_rows > 0) {
+                    $offset = $row["offset"];
 
-                $stmt = $conn->prepare("SELECT * FROM {$table->name} LIMIT 1 OFFSET {$offset}");
-                if($stmt->execute()) {
-                    $res = $stmt->get_result();
-                    $row = $res->fetch_assoc();
-                    $object = self::create();
-                    foreach($row as $key => $value) {
-                        unset($_res, $prop, $column);
-                        $_res = self::findProperty(fn(Column $column) => $column->name == $key);
-                        if($_res !== null) {
-                            [$prop, $column] = $_res;
-                            $prop->setValue($object, $value);
+                    $stmt = $conn->prepare("SELECT * FROM {$table->name} LIMIT 1 OFFSET {$offset}");
+                    if($stmt->execute()) {
+                        $res = $stmt->get_result();
+                        $row = $res->fetch_assoc();
+                        $object = self::create();
+                        foreach($row as $key => $value) {
+                            unset($_res, $prop, $column);
+                            $_res = self::findProperty(fn(Column $column) => $column->name == $key);
+                            if($_res !== null) {
+                                [$prop, $column] = $_res;
+                                $prop->setValue($object, $value);
+                            }
                         }
-                    }
-                    return $object;
-                } else throw new Exception($stmt->error, 500);
+                        return $object;
+                    } else throw new Exception($stmt->error, 500);
+                } else return null;
             } else throw new Exception($stmt->error, 500);
         }
 
@@ -337,13 +340,18 @@
                     $property = new ReflectionProperty($class, $name);
                     if($property->getAttributes(Sensitive::class)) return;
                     if($property->isPrivate()) $property->setAccessible(true);
-                    $value = $property->isInitialized($this) ? $property->getValue($this) : null;
-                    if(!$property->isInitialized($this)) {
-                        $parentClass = (new ReflectionClass($class))->getParentClass();
-                        if($parentClass !== false && $parentClass->getName() === BaseObject::class) {
-                            $value = $this->__get($name);
-                        }
+
+                    $attributes = $property->getAttributes(ProxyProperty::class);
+                    if(!empty($attributes)) {
+                        /** @var ProxyProperty $proxy */
+                        $proxy = $attributes[0]->newInstance();
+                        $_property = new ReflectionProperty($class, $proxy->propertyName);
+                        if($_property->isPrivate()) $_property->setAccessible(true);
+                        $value = $_property->isInitialized($this) ? $_property->getValue($this) : null;
+                    } else {
+                        $value = $property->isInitialized($this) ? $property->getValue($this) : null;
                     }
+
                     $res[$name] = $value;
                 });
             return $res;
