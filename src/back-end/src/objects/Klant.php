@@ -26,7 +26,7 @@ class Klant extends BaseObject {
     #[Column("klantNaam",
         regexp: '/^[\\w@&+-]+(?: [\\w@&+-]+)*$/iu',
         minLength: 3,
-        maxLength: 15
+        maxLength: 32
     )]
     private string $naam;
 

@@ -14,6 +14,7 @@
      * @property int $voorraad
      * @property int $minVoorraad
      * @property int $maxVoorraad
+     * @property string $foto
      * @property ?int $locatie
      * @property Leverancier $leverancier
      */
@@ -47,6 +48,11 @@
 
         #[Column("artMaxVoorraad", min: 0)]
         private int $maxVoorraad;
+
+        #[Column("artFoto",
+            nullable: true
+        )]
+        private string $foto;
 
         #[Column("artLocatie", nullable: true, min: 0)]
         private ?int $locatie;
@@ -90,6 +96,7 @@
             $artikel->minVoorraad = rand(50, 100);
             $artikel->maxVoorraad = rand(250, 500);
             $artikel->voorraad = rand(0, $artikel->maxVoorraad);
+            $artikel->foto = $product['foto'];
             $artikel->leverancier = Leverancier::random();
             $artikel->_levId = $artikel->leverancier->id; // yes, smh
             $artikel->save();

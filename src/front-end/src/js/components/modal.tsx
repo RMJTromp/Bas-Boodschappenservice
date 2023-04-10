@@ -6,7 +6,7 @@ export interface ModalElement extends HTMLDivElement {
     closeable: boolean
 }
 
-export default function Modal(props) {
+export function Modal(props) {
     const modalElement : ModalElement = <div className="modal" open></div>;
     const card : HTMLDivElement = <div className="card"></div>;
     modalElement.append(card);

@@ -14,6 +14,10 @@
         Route::$methods = [ Request::get()->method ];
 
         $path = $REQUEST_URL->pathname;
+        if($path === "/favicon.ico") {
+            http_response_code(404);
+            exit();
+        }
         if($path === "/") $path = "/index.html";
         $file = new File("../front-end/dist" . $path);
         if(!$file->isFile()) $file = new File("../front-end/dist/index.html");

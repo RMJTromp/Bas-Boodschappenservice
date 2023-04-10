@@ -1,44 +1,36 @@
 import { h } from "dom-chef";
 
+export function Link({link, icon = "blank", text, badge = false, sub = false}) {
+    return <a href={link} class={sub ? "active sub-link" : ""}>
+        <div className="target">
+            <i className={`codicon codicon-${sub ? "arrow-small-right" : icon}`}></i>
+            {text}
+        </div>
+        {badge ? <span className="badge"/> : undefined}
+    </a>;
+}
+
+Link.defaultProps = {
+    link: undefined,
+    text: undefined,
+    icon: "blank",
+    badge: false,
+    sub: false,
+}
+
 export default function Sidebar() {
     const sidebar : HTMLDivElement = <aside>
-        <a href="/">
-            <div className="target">
-                <i className="codicon codicon-home"></i>
-                Home
-            </div>
-        </a>
-
-        <a href="/leveranciers">
-            <div className="target">
-                <i className="codicon codicon-rocket"></i>
-                Leveranciers
-            </div>
-            <span className="badge"></span>
-        </a>
-
-        <a href="/klanten">
-            <div className="target">
-                <i className="codicon codicon-organization"></i>
-                Klanten
-            </div>
-            <span className="badge"></span>
-        </a>
-
-        <a href="/artikels">
-            <div className="target">
-                <i className="codicon codicon-package"></i>
-                Artikels
-            </div>
-            <span className="badge"></span>
-        </a>
+        <Link link={"/"} icon={"home"} text={"Home"}/>
+        <Link link={"/leveranciers"} icon={"rocket"} text={"Leveranciers"} badge={true}/>
+        <Link link={"/klanten"} icon={"organization"} text={"Klanten"} badge={true}/>
+        <Link link={"/artikelen"} icon={"package"} text={"Artikels"} badge={true}/>
     </aside>;
 
-    window.build = async () => {
+    window.onupdate = async () => {
         const url = new URL(window.location.href);
 
         const counts = (await ((await fetch("http://api.boodschappenservice.loc/count")).json())).response;
-        sidebar.querySelectorAll("a").forEach(a => {
+        sidebar.querySelectorAll("a:not(.sub-link)").forEach((a : HTMLAnchorElement) => {
             const target = new URL(a.href);
             if (url.host === target.host && url.pathname === target.pathname) a.classList.add("active");
             else a.classList.remove("active");

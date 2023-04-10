@@ -19,10 +19,14 @@
 
         $leveranciers = !empty($search) ? Leverancier::getAll() : Leverancier::getAll($limit, $offset);
         $leveranciers = new ArrayList($leveranciers);
+
         $meta = [
-            'total' => Leverancier::count(),
-            'limit' => $limit,
-            'offset' => $offset
+            'results' => [
+                'count' => 0,
+                'total' => Leverancier::count(),
+                'limit' => $limit,
+                'offset' => $offset,
+            ]
         ];
 
         if(!empty($search)) {
@@ -39,14 +43,19 @@
                 })
                 ->sort(fn(array $a, array $b) => $b['match'] <=> $a['match'])
                 ->filter(fn(array $a) => $a['match'] > $treshold)
-                ->map(fn(array $a) => $a['object'])
-                ->slice($offset, $limit);
+                ->map(fn(array $a) => $a['object']);
 
-            $meta['search'] = $search;
-            $meta['treshold'] = $treshold;
+            $meta['results']['total'] = $leveranciers->count();
+
+            $leveranciers = $leveranciers->slice($offset, $limit);
+
+            $meta['search'] = [
+                'query' => $search,
+                'treshold' => $treshold
+            ];
         }
 
-        $meta['results'] = $leveranciers->count();
+        $meta['results']['count'] = $leveranciers->count();
         API::printAndExit($leveranciers, meta: $meta);
     });
 

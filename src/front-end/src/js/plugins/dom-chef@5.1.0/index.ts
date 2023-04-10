@@ -91,7 +91,7 @@ const booleanishAttributes = new Set([
     'preserveAlpha',
 ]);
 
-export const h = (type, attributes, ...children) => {
+export const h = (type, attributes, ...children) : HTMLElement => {
     var _a;
     const element = create(type, attributes);
     addChildren(element, children);

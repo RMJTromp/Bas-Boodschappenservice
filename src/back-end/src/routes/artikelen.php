@@ -9,26 +9,30 @@
     use Boodschappenservice\utilities\RegExp;
     use Boodschappenservice\utilities\ResponseCode;
 
-    Route::get("/artikels", function() {
+    Route::get("/artikelen", function() {
         $limit = intval($_GET['limit'] ?? 100);
         $offset = intval($_GET['offset'] ?? 0);
         $limit = min(max($limit, 0), 100);
         $offset = max($offset, 0);
 
         $search = strtolower($_GET['search'] ?? "");
-        $treshold = floatval($_GET['treshold'] ?? 0.4);
+        $treshold = floatval($_GET['treshold'] ?? 0.5);
 
-        $artikels = !empty($search) ? Artikel::getAll() : Artikel::getAll($limit, $offset);
-        $artikels = new ArrayList($artikels);
+        $artikelen = !empty($search) ? Artikel::getAll() : Artikel::getAll($limit, $offset);
+        $artikelen = new ArrayList($artikelen);
+
         $meta = [
-            'total' => Artikel::count(),
-            'limit' => $limit,
-            'offset' => $offset
+            'results' => [
+                'count' => 0,
+                'total' => Artikel::count(),
+                'limit' => $limit,
+                'offset' => $offset,
+            ]
         ];
 
         if(!empty($search)) {
             $searchLen = strlen($search);
-            $artikels = $artikels
+            $artikelen = $artikelen
                 ->map(function(Artikel $artikel) use ($search, $searchLen) {
                     $naam = strtolower($artikel->omschrijving);
                     $match = 1 - (levenshtein($naam, $search) / max(strlen($naam), $searchLen));
@@ -40,15 +44,20 @@
                 })
                 ->sort(fn(array $a, array $b) => $b['match'] <=> $a['match'])
                 ->filter(fn(array $a) => $a['match'] > $treshold)
-                ->map(fn(array $a) => $a['object'])
-                ->slice($offset, $limit);
+                ->map(fn(array $a) => $a['object']);
 
-            $meta['search'] = $search;
-            $meta['treshold'] = $treshold;
+            $meta['results']['total'] = $artikelen->count();
+
+            $artikelen = $artikelen->slice($offset, $limit);
+
+            $meta['search'] = [
+                'query' => $search,
+                'treshold' => $treshold
+            ];
         }
 
-        $meta['results'] = $artikels->count();
-        API::printAndExit($artikels, meta: $meta);
+        $meta['results']['count'] = $artikelen->count();
+        API::printAndExit($artikelen, meta: $meta);
     });
 
     Route::handle(RegExp::compile("/^\/artikel\/(\d+)$/"), function(Request $request, array $matches) {
@@ -120,10 +129,10 @@
 
             API::printAndExit($artikel);
         } else {
-            $artikels = [];
+            $artikelen = [];
             for($i = 0; $i < $amount; $i++) {
-                $artikels[] = Artikel::generateRandom();
+                $artikelen[] = Artikel::generateRandom();
             }
-            API::printAndExit($artikels);
+            API::printAndExit($artikelen);
         }
     });

@@ -5,7 +5,10 @@ section {
         justify-content: space-between;
         align-items: center;
 
-        > div {
+        > div.controls {
+            display: flex;
+            gap: 1rem;
+
             > button {
                 all: unset;
                 border: none;
@@ -39,16 +42,87 @@ section {
         > div {
             display: grid;
             padding: 0.75rem 1.5rem;
-            grid-template-columns: repeat(3, 1fr) 10%;
+            grid-template-columns: 1fr max-content;
+            gap: 1rem;
 
             &:nth-of-type(2n) {
                 background: #f9f9f9;
             }
 
-            > p > a {
-                color: #ce000c;
-                &:hover {
-                    text-decoration: underline;
+            > div.details {
+                display: grid;
+                grid-auto-flow: column;
+
+                > p > a {
+                    color: #ce000c;
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+
+            &.leverancier {
+                > div.details {
+                    grid-template-columns: repeat(3, calc(100% / 3));
+                }
+            }
+
+            &.klant {
+                > div.details {
+                    grid-template-columns: repeat(2, calc(100% / 2));
+                }
+            }
+
+            &.artikel {
+                position: relative;
+                > div.details {
+                    grid-template-columns: max-content;
+
+                    > div {
+                        display: grid;
+                        grid-auto-flow: column;
+                        gap: 1rem;
+
+                        > div.details {
+                            > p.voorraad {
+                                display: flex;
+                                gap: .25rem;
+
+                                > span {
+                                    display: inline-flex;
+                                    gap: .25rem;
+                                }
+                            }
+
+                            a {
+                                color: #ce000c;
+                                &:hover {
+                                    text-decoration: underline;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                &.danger {
+                    &:nth-of-type(2n) {
+                        background: #ce000c26;
+                    }
+
+                    > div.details > div > div.details > p:last-of-type > span {
+                        color: #ce000c;
+                    }
+                }
+
+                &.warning {
+                    background: #ffa5001a;
+
+                    &:nth-of-type(2n) {
+                        background: #ffa50026;
+                    }
+                    > div.details > div > div.details > p:last-of-type > span {
+                        color: orange;
+                    }
                 }
             }
 
@@ -60,11 +134,24 @@ section {
 
                 > a {
                     cursor: pointer;
+                    &:has(> i.codicon) {
+                        transition: scale .2s ease-in-out;
+                        &:hover {
+                            scale: 1.25;
+                            color: #0059ce;
+                        }
+                    }
                     &:has(i.codicon.codicon-pencil):hover {
                         color: #0059ce;
                     }
                     &:has(i.codicon.codicon-trash):hover {
                         color: #ce000c;
+                    }
+                    &:has(i.codicon.codicon-chevron-right) {
+                        text-shadow: 0.5px 0 #000000;
+                        &:hover {
+                            text-shadow: 0.5px 0 #0059ce;
+                        }
                     }
                 }
             }

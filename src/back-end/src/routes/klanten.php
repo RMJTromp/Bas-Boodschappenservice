@@ -19,10 +19,14 @@
 
         $klanten = !empty($search) ? Klant::getAll() : Klant::getAll($limit, $offset);
         $klanten = new ArrayList($klanten);
+
         $meta = [
-            'total' => Klant::count(),
-            'limit' => $limit,
-            'offset' => $offset
+            'results' => [
+                'count' => 0,
+                'total' => Klant::count(),
+                'limit' => $limit,
+                'offset' => $offset,
+            ]
         ];
 
         if(!empty($search)) {
@@ -39,14 +43,19 @@
                 })
                 ->sort(fn(array $a, array $b) => $b['match'] <=> $a['match'])
                 ->filter(fn(array $a) => $a['match'] > $treshold)
-                ->map(fn(array $a) => $a['object'])
-                ->slice($offset, $limit);
+                ->map(fn(array $a) => $a['object']);
 
-            $meta['search'] = $search;
-            $meta['treshold'] = $treshold;
+            $meta['results']['total'] = $klanten->count();
+
+            $klanten = $klanten->slice($offset, $limit);
+
+            $meta['search'] = [
+                'query' => $search,
+                'treshold' => $treshold
+            ];
         }
 
-        $meta['results'] = $klanten->count();
+        $meta['results']['count'] = $klanten->count();
         API::printAndExit($klanten, meta: $meta);
     });
 
