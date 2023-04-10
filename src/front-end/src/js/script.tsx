@@ -1,5 +1,6 @@
 import { h } from "dom-chef";
 import Sidebar from "./components/sidebar";
+import { loginManager } from "./components/login-manager";
 import "./utilities/windowBuild";
 const logo = require("../img/logo.png");
 import * as routers from "./routes";
@@ -20,6 +21,11 @@ function build() {
             main.replaceWith(<Page url={url}/> ?? <main/>);
             break;
         }
+    }
+
+    if (!loginManager.isLoggedIn && !/^\/login$/i.test(url.pathname) && !/^\/register$/i.test(url.pathname)) {
+        window.history.pushState({}, null, "/login");
+        return;
     }
 
     window.build();

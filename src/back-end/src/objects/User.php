@@ -111,6 +111,7 @@ class User implements \JsonSerializable {
         $stmt = $conn->prepare("SELECT userId, password FROM `users` WHERE username = ? LIMIT 1");
         $stmt->bind_param("s", $username);
         $res = $stmt->execute();
+        $stmt->store_result();
 
         if ($res) {
             $stmt->bind_result($userId, $hashedPassword);
@@ -127,6 +128,7 @@ class User implements \JsonSerializable {
             throw new \Exception($stmt->error, 500);
         }
     }
+
 
     public static function searchUsers(string $searchQuery): array {
         global $conn;
