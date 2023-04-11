@@ -2,6 +2,7 @@
 
     use Boodschappenservice\core\Request;
     use Boodschappenservice\core\Route;
+    use Boodschappenservice\objects\Artikel;
     use Boodschappenservice\objects\Leverancier;
     use Boodschappenservice\utilities\API;
     use Boodschappenservice\utilities\ArrayList;
@@ -82,6 +83,13 @@
             default:
                 API::printAndExit([], ResponseCode::METHOD_NOT_ALLOWED[0]);
         }
+    });
+
+    Route::get(RegExp::compile("/^\/leverancier\/(\d+)\/artikelen$/"), function(Request $request, array $matches) {
+        $id = intval($matches[1][0]);
+        $leverancier = Leverancier::get($id);
+        $artikelen = Artikel::byLeverancier($leverancier);
+        API::printAndExit($artikelen);
     });
 
     Route::post("/leverancier", function(Request $request) {

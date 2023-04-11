@@ -11,7 +11,7 @@ export function Modal(props) {
     const card : HTMLDivElement = <div className="card"></div>;
     modalElement.append(card);
 
-    let closeable : boolean = Boolean(props.closeable || true);
+    let closeable : boolean = Boolean(props.closeable);
 
     Object.defineProperties(modalElement, {
         open: {
@@ -55,7 +55,7 @@ export function Modal(props) {
     let mouseDownTarget = null;
     modalElement.onmousedown = (e) => mouseDownTarget = e.target;
     modalElement.onmouseup = (e) => {
-        if(e.target === mouseDownTarget && e.target === modalElement)
+        if(e.target === mouseDownTarget && e.target === modalElement && closeable)
             modalElement.removeAttribute("open");
         mouseDownTarget = null;
     }

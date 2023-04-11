@@ -16,6 +16,13 @@ function build() {
     const main = document.querySelector("main");
     main.innerHTML = "";
 
+
+    // if (!loginManager.isLoggedIn && !/^\/login$/i.test(url.pathname) && !/^\/register$/i.test(url.pathname)) {
+    //     window.history.pushState({}, null, "/login");
+    //     window.build();
+    //     return;
+    // }
+
     for (const {path, Page} of Object.values(routers) as Router[]) {
         if(Array.isArray(path) ? path.some(p => p.test(url.pathname)) : path.test(url.pathname)) {
             main.replaceWith(<Page url={url}/> ?? <main/>);
@@ -23,24 +30,7 @@ function build() {
         }
     }
 
-    if (!loginManager.isLoggedIn && !/^\/login$/i.test(url.pathname) && !/^\/register$/i.test(url.pathname)) {
-        window.history.pushState({}, null, "/login");
-        return;
-    }
-
     window.build();
-
-    // if(url.pathname === "/leveranciers") {
-    //     main.append(<Leveranciers/>);
-    // } else if(url.pathname === "/artikelen") {
-    //     main.append(<Artikels/>);
-    // } else if(url.pathname === "/klanten") {
-    //     main.append(<Klanten/>);
-    // } else if(/^\/leverancier\/\d+$/.test(url.pathname)) {
-    //     fetch(`http://api.boodschappenservice.loc/leverancier/${url.pathname.split("/")[2]}`)
-    //         .then(res => res.json())
-    //         .then(res => main.append(...<Leverancier leverancier={res.response}/>));
-    // }
 }
 
 

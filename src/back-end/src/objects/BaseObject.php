@@ -246,20 +246,20 @@
             if(!$stmt->execute()) throw new Exception($stmt->error, 500);
         }
 
-        private static function getTable() : Table {
+        protected static function getTable() : Table {
             $class = get_called_class();
             $attributes = (new ReflectionClass($class))->getAttributes(Table::class);
             if(!empty($attributes)) return $attributes[0]->newInstance();
             else throw new Exception("Class $class does not have a #[Table] attribute");
         }
 
-        private static function getPrimaryProperty() : array {
+        protected static function getPrimaryProperty() : array {
             $res = self::findProperty(fn(Column $column) => $column->primary);
             if($res === null) throw new Exception("No primary key found");
             return $res;
         }
 
-        private static function getProperties(callable $callback = null) : array {
+        protected static function getProperties(callable $callback = null) : array {
             $class = get_called_class();
             $properties = [];
             foreach((new ReflectionClass($class))->getProperties() as $prop) {
@@ -275,7 +275,7 @@
             return $properties;
         }
 
-        private static function findProperty(callable $callback) : ?array {
+        protected static function findProperty(callable $callback) : ?array {
             $class = get_called_class();
             foreach((new ReflectionClass($class))->getProperties() as $prop) {
                 if($prop->class != $class || $prop->isStatic()) continue;
@@ -342,15 +342,8 @@
                     if($property->isPrivate()) $property->setAccessible(true);
 
                     $attributes = $property->getAttributes(ProxyProperty::class);
-                    if(!empty($attributes)) {
-                        /** @var ProxyProperty $proxy */
-                        $proxy = $attributes[0]->newInstance();
-                        $_property = new ReflectionProperty($class, $proxy->propertyName);
-                        if($_property->isPrivate()) $_property->setAccessible(true);
-                        $value = $_property->isInitialized($this) ? $_property->getValue($this) : null;
-                    } else {
-                        $value = $property->isInitialized($this) ? $property->getValue($this) : null;
-                    }
+                    if(!empty($attributes))  $value = $class::__get($name);
+                    else $value = $property->isInitialized($this) ? $property->getValue($this) : null;
 
                     $res[$name] = $value;
                 });

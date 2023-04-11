@@ -61,7 +61,7 @@
         public function __get(string $name) {
             if ($name === "klant") {
                 if (empty($this->klant))
-                    $this->klant = Klant::get($this->_levId);
+                    $this->klant = Klant::get($this->_klantId);
                 return $this->klant;
             } else if($name === "artikel") {
                 if (empty($this->artikel))

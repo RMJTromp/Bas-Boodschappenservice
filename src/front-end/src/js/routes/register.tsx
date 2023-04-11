@@ -7,7 +7,7 @@ import syncFetch from "../utilities/sync-fetch";
 export function RegisterModal(props: { callback: () => void, [key: string]: any }) {
     let usernameInput, passwordInput, emailInput;
     const self = (
-        <BaseModal>
+        <BaseModal closeable={false}>
             <header>
                 <h2>Register</h2>
             </header>
@@ -23,8 +23,7 @@ export function RegisterModal(props: { callback: () => void, [key: string]: any 
                 </label>
             </main>
             <footer>
-                <button onClick={() => self.open = false}>Cancel</button>
-                <button onClick={() => window.history.pushState({}, null, "/login")}>Go to Login</button>
+                <button onClick={() => window.history.pushState({}, null, "/login")}>Login</button>
                 <button className={"primary"} onClick={function () {
                     this.disabled = true;
 
@@ -60,27 +59,15 @@ export function RegisterModal(props: { callback: () => void, [key: string]: any 
             </footer>
         </BaseModal>
     );
+    self.closeable = false;
     return self;
 }
 
 export default {
     path: /^\/register$/i,
     Page: () => {
-        const self: HTMLDivElement = (
-            <main>
-                <section>
-                    <div className="container">
-                        <div className="title">
-                            <h1>Register</h1>
-                        </div>
-                        <div className="card">
-                            {RegisterModal({ callback: () => { /* Update after registration */ } })}
-                        </div>
-                    </div>
-                </section>
-            </main>
-        );
-
-        return self;
+        return <main>
+            <RegisterModal callback={() => { /* Update after registration */ }} />
+        </main>;
     }
 } as Router;

@@ -53,7 +53,7 @@
         #[Column("artFoto",
             nullable: true
         )]
-        private string $foto;
+        private ?string $foto;
 
         #[Column("artLocatie", nullable: true, min: 0)]
         private ?int $locatie;
@@ -71,6 +71,7 @@
         public function __get(string $name) {
             if ($name === "leverancier") {
                 if (empty($this->leverancier))
+                    if(empty($this->_levId)) return null;
                     $this->leverancier = Leverancier::get($this->_levId);
                 return $this->leverancier;
             }
@@ -84,6 +85,23 @@
                     $this->leverancier = $value;
                 } else throw new \InvalidArgumentException("Value must be an instance of Leverancier");
             } else parent::__set($name, $value);
+        }
+
+        public static function byLeverancier(Leverancier $leverancier) : array {
+            global $conn;
+            $table = self::getTable()->name;
+            $primaryKey = self::getPrimaryProperty()[1]->name;
+            $stmt = $conn->prepare("SELECT $primaryKey FROM $table WHERE levId = ?");
+            $levId = $leverancier->id;
+            $stmt->bind_param("i", $levId);
+            $stmt->execute();
+            $res = $stmt->get_result();
+            if($res->num_rows === 0) return [];
+            $ids = [];
+            while($row = $res->fetch_assoc()) {
+                $ids[] = $row[$primaryKey];
+            }
+            return array_map(fn($id) => self::get($id), $ids);
         }
 
         public static function generateRandom() : Artikel {

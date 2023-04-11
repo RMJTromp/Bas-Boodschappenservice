@@ -1,4 +1,4 @@
-import {Artikel, Router} from "../types";
+import {Artikel, Leverancier, Router} from "../types";
 import {Modal as BaseModal} from "../components/modal";
 import Codicon from "../components/codicon";
 import {h} from "dom-chef";
@@ -6,34 +6,36 @@ import syncFetch from "../utilities/sync-fetch";
 
 export function Modal(props : {callback: (artikel: Artikel) => void, artikel?: Artikel, [key : string] : any}) {
     const artikel = props.artikel ?? null;
-    let naamInput, adresInput, postcodeInput, plaatsInput, contactInput, emailInput;
+    let omschrijnvingInput, minVoorraadInput, voorraadInput, maxVoorraadInput, inkoopPrijsInput, verkoopPrijsInput, leverancierInput;
     const self = <BaseModal>
         <header>
             <h2>{artikel ? "Wijzig Artikel" : "Nieuwe Artikel"}</h2>
         </header>
         <main>
-            <h4>artikel</h4>
-            <label>Naam
-                {naamInput = <input type="text" value={artikel?.naam ?? ""}/>}
+            <label>Omschrijving
+                {omschrijnvingInput = <input type="text" value={artikel?.omschrijving ?? ""}/>}
             </label>
-            <div style={{display: "grid", gridTemplateColumns: "65% 31%", gap: "1rem"}}>
-                <label>Adres
-                    {adresInput = <input type="text" value={artikel?.adres ?? ""}/>}
+            <div style={{display: "grid", gridTemplateColumns: "repeat(2, 48.5%)", gap: "1rem"}}>
+                <label>Inkoop Prijs
+                    {inkoopPrijsInput = <input type="number" value={artikel?.minVoorraad ?? 1.50}/>}
                 </label>
-                <label>Postcode
-                    {postcodeInput = <input type="text" style={{textTransform: "uppercase"}} value={artikel?.postcode ?? ""}/>}
+                <label>Verkoop Prijs
+                    {verkoopPrijsInput = <input type="number" value={artikel?.voorraad ?? 1.85}/>}
                 </label>
             </div>
-            <label>Plaats
-                {plaatsInput = <input type="text" value={artikel?.woonplaats ?? ""}/>}
-            </label>
-
-            <h4 style={{marginTop: "15px"}}>Contactpersoon</h4>
-            <label>Volledige Naam
-                {contactInput = <input type="text" value={artikel?.contact ?? ""}/>}
-            </label>
-            <label>E-mail
-                {emailInput = <input type="email" value={artikel?.email ?? ""}/>}
+            <div style={{display: "grid", gridTemplateColumns: "repeat(3, 31.5%)", gap: "1rem"}}>
+                <label>Minimum Voorraad
+                    {minVoorraadInput = <input type="number" value={artikel?.minVoorraad ?? 1}/>}
+                </label>
+                <label>Voorraad
+                    {voorraadInput = <input type="number" value={artikel?.voorraad ?? 50}/>}
+                </label>
+                <label>Maximum Voorraad
+                    {maxVoorraadInput = <input type="number" value={artikel?.maxVoorraad ?? 100}/>}
+                </label>
+            </div>
+            <label>Leverancier ID
+                {leverancierInput = <input type="number" value={artikel?.leverancier.id ?? undefined}/>}
             </label>
         </main>
         <footer>
@@ -42,12 +44,13 @@ export function Modal(props : {callback: (artikel: Artikel) => void, artikel?: A
                 this.disabled = true;
 
                 const body = {
-                    naam: naamInput.value,
-                    adres: adresInput.value,
-                    postcode: postcodeInput.value,
-                    woonplaats: plaatsInput.value,
-                    contact: contactInput.value,
-                    email: emailInput.value,
+                    omschrijving: omschrijnvingInput.value,
+                    minVoorraad: minVoorraadInput.value,
+                    voorraad: voorraadInput.value,
+                    maxVoorraad: maxVoorraadInput.value,
+                    inkoopPrijs: inkoopPrijsInput.value,
+                    verkoopPrijs: verkoopPrijsInput.value,
+                    leverancier: leverancierInput.value
                 };
 
                 const promise = artikel
@@ -88,11 +91,13 @@ export function Modal(props : {callback: (artikel: Artikel) => void, artikel?: A
     return self;
 }
 
-function Entry(props : {artikel : Artikel, callback: (artikel: Artikel) => void, [key : string] : any}) {
+export function Entry(props : {artikel : Artikel, callback: (artikel: Artikel) => void, [key : string] : any}) {
     const artikel = props.artikel;
 
     let foto = artikel.foto;
-    if(foto && foto.startsWith("AHI")) {
+    if(!foto) {
+        foto = "https://www.grouphealth.ca/wp-content/uploads/2018/05/placeholder-image.png";
+    } else if(foto.startsWith("AHI")) {
         let [id, rev] = foto.split(":");
         foto = `https://static.ah.nl/dam/product/${id}?revLabel=${rev}&rendition=200x200_JPG_Q85&fileType=binary`;
     }
@@ -104,12 +109,12 @@ function Entry(props : {artikel : Artikel, callback: (artikel: Artikel) => void,
         <div className={`artikel ${lowQuantity ? (negativeQuantity ? "danger" : "warning") : ""}`}>
             <div className="details">
                 <div>
-                    <img src={foto} alt={artikel.omschrijving} width={64} height={64} style={{mixBlendMode: "multiply"}}/>
+                    <img src={foto} alt={artikel.omschrijving} width={64} height={64} style={{mixBlendMode: "multiply", objectPosition:"center", objectFit: "contain"}}/>
                     <div className="details">
                         <b>{artikel.omschrijving}</b>
                         <p>Inkoop Prijs: <b>€{artikel.inkoopPrijs.toFixed(2)}</b> | Verkoop Prijs: <b>€{artikel.verkoopPrijs.toFixed(2)}</b></p>
                         <p class={"voorraad"}><span>{negativeQuantity || lowQuantity ? <Codicon name={"warning"}/> : undefined} Voorraad: <b>{artikel.voorraad}</b></span> | Min Voorraad: <b>{artikel.minVoorraad}</b> | Max Voorraad: <b>{artikel.maxVoorraad}</b></p>
-                        <span>Leverancier: <a href={`/leverancier/${artikel.leverancier.id}`}>{artikel.leverancier.naam}</a></span>
+                        {typeof artikel.leverancier === "object" ? <span>Leverancier: <a href={`/leverancier/${artikel.leverancier.id}`}>{artikel.leverancier.naam}</a></span> : undefined}
                     </div>
                 </div>
             </div>
@@ -126,7 +131,6 @@ function Entry(props : {artikel : Artikel, callback: (artikel: Artikel) => void,
                             }
                         })
                 }}><Codicon name={"trash"}/></a>
-                <a href={`/artikel/${artikel.id}`}><Codicon name={"chevron-right"}/></a>
             </div>
         </div>
     )

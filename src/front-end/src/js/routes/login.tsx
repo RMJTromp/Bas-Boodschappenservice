@@ -7,7 +7,7 @@ import syncFetch from "../utilities/sync-fetch";
 export function LoginModal(props: { callback: () => void, [key: string]: any }) {
     let usernameInput, passwordInput;
     const self = (
-        <BaseModal>
+        <BaseModal closeable={false}>
             <header>
                 <h2>Login</h2>
             </header>
@@ -20,8 +20,7 @@ export function LoginModal(props: { callback: () => void, [key: string]: any }) 
                 </label>
             </main>
             <footer>
-                <button onClick={() => self.open = false}>Cancel</button>
-                <button onClick={() => window.history.pushState({}, null, "/register")}>Go to Register</button>
+                <button onClick={() => window.history.pushState({}, null, "/register")}>Register</button>
                 <button className={"primary"} onClick={function () {
                     this.disabled = true;
 
@@ -62,21 +61,8 @@ export function LoginModal(props: { callback: () => void, [key: string]: any }) 
 export default {
     path: /^\/login$/i,
     Page: () => {
-        const self: HTMLDivElement = (
-            <main>
-                <section>
-                    <div className="container">
-                        <div className="title">
-                            <h1>Login</h1>
-                        </div>
-                        <div className="card">
-                            {LoginModal({ callback: () => { /* Update after login */ } })}
-                        </div>
-                    </div>
-                </section>
-            </main>
-        );
-
-        return self;
+        return <main>
+            <LoginModal callback={() => { /* Update after login */ }} />
+        </main>;
     }
 } as Router;

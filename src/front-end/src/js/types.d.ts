@@ -38,3 +38,16 @@ export interface Klant {
     postcode: string,
     woonplaats: string,
 }
+
+export interface VerkoopOrder {
+    id: number,
+    klant: Klant,
+    artikel: Artikel,
+    datum: {
+        date: string,
+        timezone_type: number,
+        timezone: string
+    },
+    aantal: 210,
+    status: 1
+}

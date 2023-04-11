@@ -102,7 +102,6 @@ function Entry(props : {klant : Klant, callback: (klant: Klant) => void, [key : 
                             }
                         })
                 }}><Codicon name={"trash"}/></a>
-                <a href={`/klant/${klant.id}`}><Codicon name={"chevron-right"}/></a>
             </div>
         </div>
     )

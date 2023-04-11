@@ -2,7 +2,6 @@
 
     namespace {
 
-        use Boodschappenservice\core\Request;
         use Boodschappenservice\utilities\API;
         use Boodschappenservice\utilities\ArrayList;
         use Boodschappenservice\utilities\File;

@@ -24,6 +24,8 @@ export default function Sidebar() {
         <Link link={"/leveranciers"} icon={"rocket"} text={"Leveranciers"} badge={true}/>
         <Link link={"/klanten"} icon={"organization"} text={"Klanten"} badge={true}/>
         <Link link={"/artikelen"} icon={"package"} text={"Artikels"} badge={true}/>
+        <Link link={"/verkooporders"} icon={"package"} text={"Verkooporders"} badge={true}/>
+        <Link link={"/inkooporders"} icon={"package"} text={"Inkooporders"} badge={true}/>
     </aside>;
 
     window.onupdate = async () => {
